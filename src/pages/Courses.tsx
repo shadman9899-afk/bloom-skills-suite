@@ -1,10 +1,37 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useSearchParams } from "react-router-dom";
-import { Clock, BarChart2, Search } from "lucide-react";
+import { Clock, BarChart2, Search, Palette, Code, Megaphone, BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+
+const categoryCards = [
+  {
+    icon: Palette,
+    title: "Design",
+    color: "from-pink-500 to-rose-500",
+    subcategories: ["Graphics", "UI/UX", "Motion"],
+  },
+  {
+    icon: Code,
+    title: "Coding",
+    color: "from-blue-500 to-indigo-500",
+    subcategories: ["Web Dev", "Mobile Apps", "Backend"],
+  },
+  {
+    icon: Megaphone,
+    title: "Marketing",
+    color: "from-amber-500 to-orange-500",
+    subcategories: ["SEO", "Social Media", "Growth"],
+  },
+  {
+    icon: BarChart3,
+    title: "Data",
+    color: "from-emerald-500 to-teal-500",
+    subcategories: ["Python", "SQL", "Dashboards"],
+  },
+];
 
 const allCourses = [
   { id: "1", title: "UI/UX Design Fundamentals", desc: "Master user-centered design principles and create beautiful interfaces.", duration: "8 weeks", level: "Beginner", category: "Design" },
@@ -41,6 +68,30 @@ const Courses = () => {
         <div className="container">
           <h1 className="text-3xl font-bold text-foreground lg:text-4xl">Explore Courses</h1>
           <p className="mt-2 text-muted-foreground">Find the perfect course to start or advance your career</p>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {categoryCards.map((cat, i) => (
+              <motion.button
+                key={cat.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.08 }}
+                onClick={() => setCategory(cat.title)}
+                className={`group relative overflow-hidden rounded-2xl p-6 text-left text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg bg-gradient-to-br ${cat.color} ${category === cat.title ? "ring-2 ring-offset-2 ring-foreground" : ""}`}
+              >
+                <cat.icon className="h-8 w-8 opacity-90" />
+                <h3 className="mt-3 text-lg font-bold">{cat.title}</h3>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {cat.subcategories.map((sub) => (
+                    <span key={sub} className="rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-medium backdrop-blur-sm">
+                      {sub}
+                    </span>
+                  ))}
+                </div>
+                <div className="absolute -bottom-4 -right-4 h-20 w-20 rounded-full bg-white/10" />
+              </motion.button>
+            ))}
+          </div>
         </div>
       </section>
 
