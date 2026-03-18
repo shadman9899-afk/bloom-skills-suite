@@ -7,6 +7,7 @@ import Index from "./pages/Index.tsx";
 import Courses from "./pages/Courses.tsx";
 import CourseDetail from "./pages/CourseDetail.tsx";
 import Payment from "./pages/Payment.tsx";
+import Portfolio from "./pages/Portfolio.tsx";
 import Support from "./pages/Support.tsx";
 import AIChatbot from "./pages/AIChatbot.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/courses" element={<Courses />} />
           <Route path="/courses/:id" element={<CourseDetail />} />
           <Route path="/payment/:id" element={<Payment />} />
+          <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/support" element={<Support />} />
           <Route path="/ai-chat" element={<AIChatbot />} />
           <Route path="*" element={<NotFound />} />
