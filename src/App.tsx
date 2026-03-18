@@ -4,6 +4,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
+import Courses from "./pages/Courses.tsx";
+import CourseDetail from "./pages/CourseDetail.tsx";
+import Payment from "./pages/Payment.tsx";
+import Support from "./pages/Support.tsx";
+import AIChatbot from "./pages/AIChatbot.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -16,7 +21,11 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/courses/:id" element={<CourseDetail />} />
+          <Route path="/payment/:id" element={<Payment />} />
+          <Route path="/support" element={<Support />} />
+          <Route path="/ai-chat" element={<AIChatbot />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
