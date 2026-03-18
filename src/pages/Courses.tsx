@@ -11,25 +11,25 @@ const categoryCards = [
     icon: Palette,
     title: "Design",
     color: "from-pink-500 to-rose-500",
-    subcategories: ["Graphics", "UI/UX", "Motion"],
+    subcategories: ["Graphics", "UI/UX", "Motion", "Video Editing", "3D"],
   },
   {
     icon: Code,
     title: "Coding",
     color: "from-blue-500 to-indigo-500",
-    subcategories: ["Web Dev", "Mobile Apps", "Backend"],
+    subcategories: ["MEAN Stack", "MERN Stack", "Full Stack"],
   },
   {
     icon: Megaphone,
     title: "Marketing",
     color: "from-amber-500 to-orange-500",
-    subcategories: ["SEO", "Social Media", "Growth"],
+    subcategories: ["Social Media Marketing", "Performance Marketing", "Content Marketing", "Email Marketing", "SEO", "Marketing Basics"],
   },
   {
     icon: BarChart3,
     title: "Data",
     color: "from-emerald-500 to-teal-500",
-    subcategories: ["Python", "SQL", "Dashboards"],
+    subcategories: ["Data Analytics", "Excel", "SQL", "Python"],
   },
 ];
 
