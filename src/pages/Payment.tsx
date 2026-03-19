@@ -30,7 +30,7 @@ const Payment = () => {
   const total = course.price - discount;
 
   const applyCoupon = () => {
-    if (coupon.toUpperCase() === "LEARNIX20") {
+    if (coupon.toUpperCase() === "SLATE20") {
       setDiscount(Math.round(course.price * 0.2));
       toast({ title: "Coupon applied!", description: "20% discount has been applied." });
     } else {
