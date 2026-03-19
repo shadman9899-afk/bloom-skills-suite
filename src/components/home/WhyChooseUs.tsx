@@ -15,7 +15,7 @@ const WhyChooseUs = () => {
     <section className="border-t border-border bg-card py-20 lg:py-28">
       <div className="container">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-foreground lg:text-4xl">Why Choose Learnix?</h2>
+          <h2 className="text-3xl font-bold text-foreground lg:text-4xl">Why Choose Slate Academy?</h2>
           <p className="mt-3 text-muted-foreground">Everything you need to launch a new career</p>
         </div>
 
