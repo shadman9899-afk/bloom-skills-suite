@@ -6,6 +6,18 @@ import { motion } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
+import uiuxImg from "@/assets/courses/uiux-design.jpg";
+import fullstackImg from "@/assets/courses/fullstack-dev.jpg";
+import digitalMarketingImg from "@/assets/courses/digital-marketing.jpg";
+import dataAnalyticsImg from "@/assets/courses/data-analytics.jpg";
+import productDesignImg from "@/assets/courses/product-design.jpg";
+import reactTsImg from "@/assets/courses/react-typescript.jpg";
+import growthHackingImg from "@/assets/courses/growth-hacking.jpg";
+import sqlDbImg from "@/assets/courses/sql-database.jpg";
+import graphicsDesignImg from "@/assets/courses/graphics-design.jpg";
+import mernStackImg from "@/assets/courses/mern-stack.jpg";
+import digitalMarketingCompleteImg from "@/assets/courses/digital-marketing-complete.jpg";
+
 const categoryCards = [
   {
     icon: Palette,
@@ -34,17 +46,17 @@ const categoryCards = [
 ];
 
 const allCourses = [
-  { id: "1", title: "UI/UX Design Fundamentals", desc: "Master user-centered design principles and create beautiful interfaces.", duration: "8 weeks", level: "Beginner", category: "Design" },
-  { id: "2", title: "Full-Stack Web Development", desc: "Build modern web applications with React, Node.js, and databases.", duration: "12 weeks", level: "Intermediate", category: "Coding" },
-  { id: "3", title: "Digital Marketing Mastery", desc: "Learn SEO, social media, content strategy, and paid advertising.", duration: "6 weeks", level: "Beginner", category: "Marketing" },
-  { id: "4", title: "Data Analytics with Python", desc: "Analyze data, build dashboards, and make data-driven decisions.", duration: "10 weeks", level: "Intermediate", category: "Data" },
-  { id: "5", title: "Product Design Sprint", desc: "Run design sprints and rapidly prototype product ideas.", duration: "4 weeks", level: "Beginner", category: "Design" },
-  { id: "6", title: "React & TypeScript Pro", desc: "Advanced React patterns, TypeScript, and production-ready code.", duration: "8 weeks", level: "Intermediate", category: "Coding" },
-  { id: "7", title: "Growth Hacking", desc: "Rapid experimentation across marketing channels and product dev.", duration: "5 weeks", level: "Beginner", category: "Marketing" },
-  { id: "8", title: "SQL & Database Design", desc: "Design schemas, write complex queries, and optimize databases.", duration: "6 weeks", level: "Beginner", category: "Data" },
-  { id: "9", title: "Graphics Design Professional", desc: "Master Adobe Creative Suite, branding, and visual storytelling for print & digital.", duration: "10 weeks", level: "Beginner", category: "Design" },
-  { id: "10", title: "MERN Stack Development", desc: "Build full-stack apps with MongoDB, Express, React, and Node.js from zero to deployment.", duration: "14 weeks", level: "Intermediate", category: "Coding" },
-  { id: "11", title: "Digital Marketing Complete Guide", desc: "End-to-end digital marketing — SEO, PPC, social media, email funnels, and analytics.", duration: "8 weeks", level: "Beginner", category: "Marketing" },
+  { id: "1", title: "UI/UX Design Fundamentals", desc: "Master user-centered design principles and create beautiful interfaces.", duration: "8 weeks", level: "Beginner", category: "Design", image: uiuxImg },
+  { id: "2", title: "Full-Stack Web Development", desc: "Build modern web applications with React, Node.js, and databases.", duration: "12 weeks", level: "Intermediate", category: "Coding", image: fullstackImg },
+  { id: "3", title: "Digital Marketing Mastery", desc: "Learn SEO, social media, content strategy, and paid advertising.", duration: "6 weeks", level: "Beginner", category: "Marketing", image: digitalMarketingImg },
+  { id: "4", title: "Data Analytics with Python", desc: "Analyze data, build dashboards, and make data-driven decisions.", duration: "10 weeks", level: "Intermediate", category: "Data", image: dataAnalyticsImg },
+  { id: "5", title: "Product Design Sprint", desc: "Run design sprints and rapidly prototype product ideas.", duration: "4 weeks", level: "Beginner", category: "Design", image: productDesignImg },
+  { id: "6", title: "React & TypeScript Pro", desc: "Advanced React patterns, TypeScript, and production-ready code.", duration: "8 weeks", level: "Intermediate", category: "Coding", image: reactTsImg },
+  { id: "7", title: "Growth Hacking", desc: "Rapid experimentation across marketing channels and product dev.", duration: "5 weeks", level: "Beginner", category: "Marketing", image: growthHackingImg },
+  { id: "8", title: "SQL & Database Design", desc: "Design schemas, write complex queries, and optimize databases.", duration: "6 weeks", level: "Beginner", category: "Data", image: sqlDbImg },
+  { id: "9", title: "Graphics Design Professional", desc: "Master Adobe Creative Suite, branding, and visual storytelling for print & digital.", duration: "10 weeks", level: "Beginner", category: "Design", image: graphicsDesignImg },
+  { id: "10", title: "MERN Stack Development", desc: "Build full-stack apps with MongoDB, Express, React, and Node.js from zero to deployment.", duration: "14 weeks", level: "Intermediate", category: "Coding", image: mernStackImg },
+  { id: "11", title: "Digital Marketing Complete Guide", desc: "End-to-end digital marketing — SEO, PPC, social media, email funnels, and analytics.", duration: "8 weeks", level: "Beginner", category: "Marketing", image: digitalMarketingCompleteImg },
 ];
 
 const categories = ["All", "Design", "Coding", "Marketing", "Data"];
@@ -147,10 +159,10 @@ const Courses = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="rounded-xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1"
+              className="group rounded-xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1"
             >
-              <div className="h-36 rounded-t-xl bg-accent flex items-center justify-center">
-                <span className="text-sm font-medium text-accent-foreground">{course.category}</span>
+              <div className="h-40 rounded-t-xl overflow-hidden">
+                <img src={course.image} alt={course.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
               </div>
               <div className="p-5">
                 <div className="flex gap-2">
