@@ -259,7 +259,7 @@ const Portfolio = () => {
               Hear From Our Students
             </h2>
             <p className="mx-auto mt-3 max-w-lg text-muted-foreground">
-              Watch how Learnix helped our students land their dream roles.
+              Watch how Slate Academy helped our students land their dream roles.
             </p>
           </div>
 
