@@ -30,7 +30,7 @@ const Footer = () => {
               <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-primary">
                 <GraduationCap className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold tracking-tight">Learnix</span>
+              <span className="text-xl font-bold tracking-tight">Slate Academy</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
               Build real skills with real-world projects. Join thousands of learners transforming their careers.
