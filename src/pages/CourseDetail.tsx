@@ -94,6 +94,139 @@ const courseData: Record<string, {
     ],
     tools: ["React", "Node.js", "TypeScript", "PostgreSQL", "Git", "Docker", "AWS", "Vercel"],
   },
+  "9": {
+    title: "Graphics Design Professional",
+    desc: "Master Adobe Creative Suite, branding, typography, and visual storytelling. Create stunning designs for print, digital media, and brand identities that captivate audiences.",
+    duration: "10 weeks", level: "Beginner", category: "Design", price: 179, originalPrice: 359,
+    instructor: "Priya Sharma", instructorRole: "Creative Director at Pentagram",
+    instructorBio: "Award-winning designer with 14+ years in branding and visual identity. Worked with Nike, Coca-Cola, and Spotify on global campaigns.",
+    stats: { students: 4100, rating: 4.8, reviews: 920, projects: 15 },
+    outcomes: [
+      "Master Adobe Photoshop, Illustrator & InDesign",
+      "Create professional brand identities from scratch",
+      "Design logos, business cards, and stationery sets",
+      "Understand color theory, typography & composition",
+      "Create social media graphics and marketing collateral",
+      "Design print-ready files (brochures, posters, packaging)",
+      "Build a professional graphic design portfolio",
+      "Work with clients — briefs, revisions, and handoff",
+    ],
+    curriculum: [
+      { title: "Design Fundamentals & Theory", lessons: 10, duration: "4h 30m", topics: ["Elements & principles of design", "Color theory & psychology", "Typography fundamentals & font pairing", "Composition, grids & layout", "Visual hierarchy"] },
+      { title: "Adobe Photoshop Mastery", lessons: 12, duration: "5h 15m", topics: ["Interface & workspace setup", "Layers, masks & blending modes", "Photo retouching & manipulation", "Digital painting & compositing", "Export for web & print"] },
+      { title: "Adobe Illustrator for Vector Art", lessons: 10, duration: "4h 45m", topics: ["Pen tool & pathfinder", "Logo design process", "Icon & illustration creation", "Pattern design & swatches", "Scalable vector workflows"] },
+      { title: "Brand Identity Design", lessons: 9, duration: "4h", topics: ["Brand strategy & mood boards", "Logo design — concept to final", "Brand guidelines document", "Stationery & collateral design", "Presentation to clients"] },
+      { title: "Print & Digital Media", lessons: 8, duration: "3h 30m", topics: ["Print production basics (CMYK, bleeds)", "Brochure & poster design", "Social media templates", "Packaging design intro", "Portfolio project"] },
+    ],
+    includes: [
+      { icon: "video", text: "22+ hours of HD video tutorials" },
+      { icon: "file", text: "100+ design templates & assets" },
+      { icon: "book", text: "Brand identity starter kit" },
+      { icon: "users", text: "Community of 4,000+ designers" },
+      { icon: "headphones", text: "2 one-on-one portfolio reviews" },
+      { icon: "award", text: "Industry-recognized certificate" },
+      { icon: "download", text: "Lifetime access & updates" },
+      { icon: "message", text: "Weekly design critiques" },
+    ],
+    afterCourse: [
+      { title: "Design Portfolio", desc: "15+ polished projects including logos, brand identities, and print designs." },
+      { title: "Freelance Ready", desc: "Client proposal templates, pricing calculator, and contract documents included." },
+      { title: "Career Support", desc: "Resume design, portfolio review sessions, and job board access." },
+      { title: "Certificate", desc: "Industry-recognized certificate to showcase your graphic design skills." },
+      { title: "Design Community", desc: "Lifetime access to our alumni Slack with feedback channels and job postings." },
+      { title: "Software Licenses", desc: "Discounted Adobe Creative Cloud subscription for 6 months." },
+    ],
+    tools: ["Photoshop", "Illustrator", "InDesign", "Canva", "Figma", "Procreate", "After Effects", "Lightroom"],
+  },
+  "10": {
+    title: "MERN Stack Development",
+    desc: "Build production-ready full-stack applications with MongoDB, Express.js, React, and Node.js. From REST APIs to real-time features, master the most in-demand JavaScript stack.",
+    duration: "14 weeks", level: "Intermediate", category: "Coding", price: 279, originalPrice: 549,
+    instructor: "Rahul Verma", instructorRole: "Principal Engineer at Shopify",
+    instructorBio: "15+ years building scalable products. Core contributor to several open-source Node.js libraries. Has mentored 500+ developers.",
+    stats: { students: 6200, rating: 4.9, reviews: 1580, projects: 22 },
+    outcomes: [
+      "Build & deploy full MERN stack applications",
+      "Design RESTful APIs with Express & Node.js",
+      "Model data with MongoDB & Mongoose ODM",
+      "Create dynamic UIs with React & Redux Toolkit",
+      "Implement JWT auth & role-based access control",
+      "Add real-time features with Socket.io",
+      "Write tests with Jest & React Testing Library",
+      "Deploy with Docker, CI/CD & cloud platforms",
+    ],
+    curriculum: [
+      { title: "JavaScript & Node.js Deep Dive", lessons: 12, duration: "5h 30m", topics: ["ES6+ features & async patterns", "Node.js runtime & event loop", "NPM ecosystem & package management", "Error handling & debugging"] },
+      { title: "Express.js & REST APIs", lessons: 10, duration: "4h 45m", topics: ["Express middleware & routing", "CRUD API design patterns", "Input validation & error handling", "File uploads & streaming", "API documentation with Swagger"] },
+      { title: "MongoDB & Data Modeling", lessons: 9, duration: "4h", topics: ["MongoDB Atlas setup", "Mongoose schemas & models", "Aggregation pipeline", "Indexing & performance", "Data relationships & population"] },
+      { title: "React Frontend Development", lessons: 14, duration: "6h 30m", topics: ["Component architecture & hooks", "Redux Toolkit for state", "React Router v6", "Form handling & validation", "API integration & loading states"] },
+      { title: "Authentication & Security", lessons: 8, duration: "3h 30m", topics: ["JWT tokens & refresh flow", "OAuth2 social login", "Role-based access control", "Security best practices (CORS, rate limiting)", "Password hashing & encryption"] },
+      { title: "Real-Time, Testing & Deployment", lessons: 10, duration: "4h 45m", topics: ["Socket.io real-time events", "Unit & integration testing", "Docker containerization", "CI/CD with GitHub Actions", "AWS / Vercel deployment"] },
+    ],
+    includes: [
+      { icon: "video", text: "30+ hours of HD video content" },
+      { icon: "file", text: "120+ code exercises & projects" },
+      { icon: "book", text: "MERN boilerplate starter kit" },
+      { icon: "users", text: "Private Discord (6,000+ devs)" },
+      { icon: "headphones", text: "Bi-weekly live coding sessions" },
+      { icon: "award", text: "Industry-recognized certificate" },
+      { icon: "download", text: "Lifetime access & updates" },
+      { icon: "message", text: "Code review from senior devs" },
+    ],
+    afterCourse: [
+      { title: "6+ Deployed Projects", desc: "Full-stack apps on your GitHub including e-commerce, chat app, and dashboard." },
+      { title: "Interview Prep", desc: "50+ curated MERN interview questions with detailed answers and system design problems." },
+      { title: "Career Support", desc: "Resume reviews, LinkedIn optimization, and referral network at top companies." },
+      { title: "Certificate", desc: "Industry-recognized certificate verifying your MERN stack expertise." },
+      { title: "Open Source Mentorship", desc: "Guided contributions to popular open-source projects to boost your profile." },
+      { title: "Lifetime Updates", desc: "Course updated every quarter with new content on latest tools and practices." },
+    ],
+    tools: ["MongoDB", "Express.js", "React", "Node.js", "Redux", "Socket.io", "Docker", "Jest"],
+  },
+  "11": {
+    title: "Digital Marketing Complete Guide",
+    desc: "Master every channel of digital marketing — from SEO and Google Ads to social media, email automation, and analytics. Learn to plan, execute, and measure campaigns that drive real business results.",
+    duration: "8 weeks", level: "Beginner", category: "Marketing", price: 129, originalPrice: 259,
+    instructor: "Sarah Mitchell", instructorRole: "VP of Marketing at HubSpot",
+    instructorBio: "Former Google Ads strategist. 11+ years driving growth for SaaS companies. Speaker at MarketingProfs and Content Marketing World.",
+    stats: { students: 7800, rating: 4.7, reviews: 2100, projects: 10 },
+    outcomes: [
+      "Build & execute end-to-end marketing strategies",
+      "Run profitable Google Ads & Facebook Ads campaigns",
+      "Master SEO — on-page, off-page & technical",
+      "Create high-converting email marketing funnels",
+      "Build a content calendar & social media strategy",
+      "Analyze data with Google Analytics 4",
+      "A/B test landing pages and ad creatives",
+      "Calculate ROI, CAC, LTV & key marketing metrics",
+    ],
+    curriculum: [
+      { title: "Marketing Foundations & Strategy", lessons: 8, duration: "3h 30m", topics: ["Digital marketing landscape", "Customer journey & funnel stages", "Buyer personas & ICP", "Marketing plan template", "Setting KPIs & OKRs"] },
+      { title: "SEO & Content Marketing", lessons: 10, duration: "4h 30m", topics: ["Keyword research with SEMrush & Ahrefs", "On-page SEO — meta, headers, schema", "Technical SEO — speed, crawlability", "Content strategy & blogging", "Link building tactics"] },
+      { title: "Paid Advertising (PPC)", lessons: 9, duration: "4h", topics: ["Google Ads — Search, Display, Shopping", "Facebook & Instagram Ads Manager", "Campaign structure & bidding", "Ad copywriting & creatives", "Retargeting & lookalike audiences"] },
+      { title: "Social Media & Email Marketing", lessons: 10, duration: "4h 15m", topics: ["Platform-specific strategies", "Content creation & scheduling", "Community management", "Email list building", "Automated email sequences & drip campaigns"] },
+      { title: "Analytics, CRO & Growth", lessons: 8, duration: "3h 30m", topics: ["Google Analytics 4 setup & reports", "Conversion tracking & attribution", "A/B testing frameworks", "Landing page optimization", "Growth loops & referral programs"] },
+    ],
+    includes: [
+      { icon: "video", text: "20+ hours of HD video content" },
+      { icon: "file", text: "60+ templates & swipe files" },
+      { icon: "book", text: "Marketing strategy playbook" },
+      { icon: "users", text: "Community of 7,000+ marketers" },
+      { icon: "headphones", text: "Monthly live campaign reviews" },
+      { icon: "award", text: "Industry-recognized certificate" },
+      { icon: "download", text: "Lifetime access & updates" },
+      { icon: "message", text: "Direct Q&A with instructor" },
+    ],
+    afterCourse: [
+      { title: "Campaign Portfolio", desc: "3+ documented case studies with real metrics showing campaign strategy and results." },
+      { title: "Marketing Toolkit", desc: "Lifetime access to 60+ templates — ad copy, email sequences, content calendars, and audit checklists." },
+      { title: "Career Support", desc: "Resume templates, interview prep, and access to marketing job board with 500+ listings." },
+      { title: "Certificate", desc: "Industry-recognized certificate proving your digital marketing proficiency." },
+      { title: "Agency Starter Kit", desc: "Client onboarding templates, proposal decks, and SOW documents to start freelancing." },
+      { title: "Lifetime Updates", desc: "Stay current — course updated with every major platform change and algorithm update." },
+    ],
+    tools: ["Google Ads", "Meta Ads", "Google Analytics", "SEMrush", "Mailchimp", "Canva", "HubSpot", "Hotjar"],
+  },
 };
 
 const defaultCourse = {
@@ -187,6 +320,15 @@ const CourseDetail = () => {
               </Button>
               <Button variant="heroOutline" size="lg" className="mt-3 w-full">
                 Try Free Preview
+              </Button>
+              <Button variant="outline" size="lg" className="mt-3 w-full gap-2" onClick={() => {
+                const link = document.createElement('a');
+                link.href = `data:text/plain;charset=utf-8,${encodeURIComponent(`${course.title} — Course Brochure\n\n${course.desc}\n\nDuration: ${course.duration}\nLevel: ${course.level}\nPrice: $${course.price}\n\nWhat You'll Learn:\n${course.outcomes.map(o => `• ${o}`).join('\n')}\n\nCurriculum:\n${course.curriculum.map((m, i) => `Module ${i+1}: ${m.title} (${m.lessons} lessons, ${m.duration})\n${m.topics.map(t => `  - ${t}`).join('\n')}`).join('\n\n')}\n\nTools: ${course.tools.join(', ')}\n\nInstructor: ${course.instructor} — ${course.instructorRole}\n\nEnroll at learnix.com`)}`;
+                link.download = `${course.title.replace(/\s+/g, '-')}-Brochure.txt`;
+                link.click();
+              }}>
+                <Download className="h-4 w-4" />
+                Download Brochure
               </Button>
               <p className="mt-4 text-center text-xs text-muted-foreground">30-day money-back guarantee · No risk</p>
 
