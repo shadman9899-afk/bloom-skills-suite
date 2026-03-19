@@ -5,7 +5,7 @@ const testimonials = [
   {
     name: "Sarah K.",
     role: "UX Designer at Google",
-    text: "SkillBridge changed my career. The projects were exactly what interviewers wanted to see.",
+    text: "Learnix changed my career. The projects were exactly what interviewers wanted to see.",
   },
   {
     name: "James M.",

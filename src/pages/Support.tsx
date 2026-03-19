@@ -91,7 +91,7 @@ const Support = () => {
           <div className="mt-6 grid gap-4 sm:grid-cols-3">
             {[
               { icon: MessageCircle, title: "Live Chat", desc: "Chat with our team in real-time", action: "Start Chat" },
-              { icon: Mail, title: "Email", desc: "support@skillbridge.com", action: "Send Email" },
+              { icon: Mail, title: "Email", desc: "support@learnix.com", action: "Send Email" },
               { icon: Phone, title: "Phone", desc: "Mon-Fri, 9AM-6PM EST", action: "Call Now" },
             ].map((c) => (
               <div key={c.title} className="rounded-xl border border-border bg-card p-6 shadow-card text-center">
