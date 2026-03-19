@@ -42,6 +42,9 @@ const allCourses = [
   { id: "6", title: "React & TypeScript Pro", desc: "Advanced React patterns, TypeScript, and production-ready code.", duration: "8 weeks", level: "Intermediate", category: "Coding" },
   { id: "7", title: "Growth Hacking", desc: "Rapid experimentation across marketing channels and product dev.", duration: "5 weeks", level: "Beginner", category: "Marketing" },
   { id: "8", title: "SQL & Database Design", desc: "Design schemas, write complex queries, and optimize databases.", duration: "6 weeks", level: "Beginner", category: "Data" },
+  { id: "9", title: "Graphics Design Professional", desc: "Master Adobe Creative Suite, branding, and visual storytelling for print & digital.", duration: "10 weeks", level: "Beginner", category: "Design" },
+  { id: "10", title: "MERN Stack Development", desc: "Build full-stack apps with MongoDB, Express, React, and Node.js from zero to deployment.", duration: "14 weeks", level: "Intermediate", category: "Coding" },
+  { id: "11", title: "Digital Marketing Complete Guide", desc: "End-to-end digital marketing — SEO, PPC, social media, email funnels, and analytics.", duration: "8 weeks", level: "Beginner", category: "Marketing" },
 ];
 
 const categories = ["All", "Design", "Coding", "Marketing", "Data"];
