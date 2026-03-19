@@ -161,8 +161,8 @@ const Courses = () => {
               transition={{ delay: i * 0.05 }}
               className="rounded-xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1"
             >
-              <div className="h-36 rounded-t-xl bg-accent flex items-center justify-center">
-                <span className="text-sm font-medium text-accent-foreground">{course.category}</span>
+              <div className="h-40 rounded-t-xl overflow-hidden">
+                <img src={course.image} alt={course.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
               </div>
               <div className="p-5">
                 <div className="flex gap-2">
