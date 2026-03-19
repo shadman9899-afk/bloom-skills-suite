@@ -6,6 +6,21 @@ import { motion } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
+import uiuxImg from "@/assets/courses/uiux-design.jpg";
+import fullstackImg from "@/assets/courses/fullstack-dev.jpg";
+import digitalMarketingImg from "@/assets/courses/digital-marketing.jpg";
+import dataAnalyticsImg from "@/assets/courses/data-analytics.jpg";
+import productDesignImg from "@/assets/courses/product-design.jpg";
+import reactTsImg from "@/assets/courses/react-typescript.jpg";
+import growthHackingImg from "@/assets/courses/growth-hacking.jpg";
+import sqlDbImg from "@/assets/courses/sql-database.jpg";
+import graphicsDesignImg from "@/assets/courses/graphics-design.jpg";
+import mernStackImg from "@/assets/courses/mern-stack.jpg";
+import digitalMarketingCompleteImg from "@/assets/courses/digital-marketing-complete.jpg";
+import { motion } from "framer-motion";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+
 const categoryCards = [
   {
     icon: Palette,
