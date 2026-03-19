@@ -321,6 +321,15 @@ const CourseDetail = () => {
               <Button variant="heroOutline" size="lg" className="mt-3 w-full">
                 Try Free Preview
               </Button>
+              <Button variant="outline" size="lg" className="mt-3 w-full gap-2" onClick={() => {
+                const link = document.createElement('a');
+                link.href = `data:text/plain;charset=utf-8,${encodeURIComponent(`${course.title} — Course Brochure\n\n${course.desc}\n\nDuration: ${course.duration}\nLevel: ${course.level}\nPrice: $${course.price}\n\nWhat You'll Learn:\n${course.outcomes.map(o => `• ${o}`).join('\n')}\n\nCurriculum:\n${course.curriculum.map((m, i) => `Module ${i+1}: ${m.title} (${m.lessons} lessons, ${m.duration})\n${m.topics.map(t => `  - ${t}`).join('\n')}`).join('\n\n')}\n\nTools: ${course.tools.join(', ')}\n\nInstructor: ${course.instructor} — ${course.instructorRole}\n\nEnroll at learnix.com`)}`;
+                link.download = `${course.title.replace(/\s+/g, '-')}-Brochure.txt`;
+                link.click();
+              }}>
+                <Download className="h-4 w-4" />
+                Download Brochure
+              </Button>
               <p className="mt-4 text-center text-xs text-muted-foreground">30-day money-back guarantee · No risk</p>
 
               <div className="mt-6 border-t border-border pt-6 space-y-3">
