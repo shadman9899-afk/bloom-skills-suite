@@ -162,7 +162,7 @@ const Portfolio = () => {
             transition={{ delay: 0.2 }}
             className="mx-auto mt-4 max-w-xl text-muted-foreground"
           >
-            Explore outstanding work from our students — built with real skills learned at Learnix.
+            Explore outstanding work from our students — built with real skills learned at Slate Academy.
           </motion.p>
         </div>
       </section>
