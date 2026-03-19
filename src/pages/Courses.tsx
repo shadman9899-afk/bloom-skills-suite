@@ -17,9 +17,6 @@ import sqlDbImg from "@/assets/courses/sql-database.jpg";
 import graphicsDesignImg from "@/assets/courses/graphics-design.jpg";
 import mernStackImg from "@/assets/courses/mern-stack.jpg";
 import digitalMarketingCompleteImg from "@/assets/courses/digital-marketing-complete.jpg";
-import { motion } from "framer-motion";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 
 const categoryCards = [
   {
