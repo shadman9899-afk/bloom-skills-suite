@@ -97,7 +97,7 @@ const videoTestimonials = [
     course: "UI/UX Design Fundamentals",
     thumbnail: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
     videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-    quote: "SkillBridge transformed my career. The hands-on projects gave me a portfolio that landed me my dream job.",
+    quote: "Learnix transformed my career. The hands-on projects gave me a portfolio that landed me my dream job.",
   },
   {
     name: "Aditya Mehta",
@@ -162,7 +162,7 @@ const Portfolio = () => {
             transition={{ delay: 0.2 }}
             className="mx-auto mt-4 max-w-xl text-muted-foreground"
           >
-            Explore outstanding work from our students — built with real skills learned at SkillBridge.
+            Explore outstanding work from our students — built with real skills learned at Learnix.
           </motion.p>
         </div>
       </section>
@@ -259,7 +259,7 @@ const Portfolio = () => {
               Hear From Our Students
             </h2>
             <p className="mx-auto mt-3 max-w-lg text-muted-foreground">
-              Watch how SkillBridge helped our students land their dream roles.
+              Watch how Learnix helped our students land their dream roles.
             </p>
           </div>
 

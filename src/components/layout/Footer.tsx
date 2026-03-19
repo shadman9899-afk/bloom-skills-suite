@@ -30,7 +30,7 @@ const Footer = () => {
               <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-primary">
                 <GraduationCap className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold tracking-tight">SkillBridge</span>
+              <span className="text-xl font-bold tracking-tight">Learnix</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
               Build real skills with real-world projects. Join thousands of learners transforming their careers.
@@ -58,7 +58,7 @@ const Footer = () => {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row">
           <p className="text-sm text-muted-foreground">
-            © 2026 SkillBridge. All rights reserved.
+            © 2026 Learnix. All rights reserved.
           </p>
           <div className="flex gap-6">
             <a href="#" className="text-sm text-muted-foreground hover:text-foreground">Privacy</a>
