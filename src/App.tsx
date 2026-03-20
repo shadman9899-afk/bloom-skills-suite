@@ -10,6 +10,8 @@ import Payment from "./pages/Payment.tsx";
 import Portfolio from "./pages/Portfolio.tsx";
 import Support from "./pages/Support.tsx";
 import AIChatbot from "./pages/AIChatbot.tsx";
+import Login from "./pages/Login.tsx";
+import Dashboard from "./pages/Dashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
