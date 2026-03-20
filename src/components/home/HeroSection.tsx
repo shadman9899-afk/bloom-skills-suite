@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import heroImage from "@/assets/hero-illustration.png";
+import heroImage from "@/assets/hero-learning-dashboard.png";
 
 const HeroSection = () => {
   return (
@@ -14,20 +14,20 @@ const HeroSection = () => {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-              Build Real Skills.{" "}
-              <span className="bg-gradient-to-r from-primary to-accent-foreground bg-clip-text text-transparent">
-                Get Real Results.
+              Your Learning Journey,{" "}
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Visualised & Tracked.
               </span>
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-muted-foreground">
-              Learn Design, Coding, Marketing & Data with real-world projects. Join 50,000+ learners already building their future.
+              Track your progress, master new skills, and see real results — all from a personalised dashboard designed for your growth.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Button variant="hero" size="xl" asChild>
                 <Link to="/courses">Start Learning</Link>
               </Button>
-              <Button variant="heroOutline" size="xl" asChild>
-                <Link to="/courses">Explore Courses</Link>
+              <Button variant="orange" size="xl" asChild>
+                <Link to="/login">Sign In</Link>
               </Button>
             </div>
           </motion.div>
@@ -40,7 +40,7 @@ const HeroSection = () => {
           >
             <img
               src={heroImage}
-              alt="Learning dashboard with design, code, and data elements"
+              alt="Student learning dashboard showing progress tracking and course analytics"
               className="w-full rounded-2xl shadow-elevated"
             />
           </motion.div>
