@@ -42,8 +42,12 @@ const Navbar = () => {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Button variant="ghost" size="sm">Log In</Button>
-          <Button variant="hero" size="default">Start Learning</Button>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/login">Log In</Link>
+          </Button>
+          <Button variant="hero" size="default" asChild>
+            <Link to="/courses">Start Learning</Link>
+          </Button>
         </div>
 
         <button
