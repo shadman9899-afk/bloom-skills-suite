@@ -30,6 +30,8 @@ const App = () => (
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/support" element={<Support />} />
           <Route path="/ai-chat" element={<AIChatbot />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
