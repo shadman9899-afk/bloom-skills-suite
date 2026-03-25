@@ -1,7 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { GraduationCap, Menu, X } from "lucide-react";
+import { GraduationCap, Menu, X, LayoutDashboard, LogOut } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = [
   { label: "Home", path: "/" },
@@ -14,6 +15,7 @@ const navLinks = [
 const Navbar = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-lg">
@@ -42,12 +44,27 @@ const Navbar = () => {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/login">Log In</Link>
-          </Button>
-          <Button variant="hero" size="default" asChild>
-            <Link to="/courses">Start Learning</Link>
-          </Button>
+          {user ? (
+            <>
+              <Button variant="hero" size="default" asChild>
+                <Link to="/dashboard">
+                  <LayoutDashboard className="mr-2 h-4 w-4" />Dashboard
+                </Link>
+              </Button>
+              <Button variant="ghost" size="icon" onClick={signOut} title="Sign out">
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/login">Log In</Link>
+              </Button>
+              <Button variant="hero" size="default" asChild>
+                <Link to="/courses">Start Learning</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         <button
@@ -77,8 +94,23 @@ const Navbar = () => {
             ))}
           </nav>
           <div className="mt-4 flex flex-col gap-2">
-            <Button variant="ghost" size="sm">Log In</Button>
-            <Button variant="hero">Start Learning</Button>
+            {user ? (
+              <>
+                <Button variant="hero" asChild onClick={() => setMobileOpen(false)}>
+                  <Link to="/dashboard">Dashboard</Link>
+                </Button>
+                <Button variant="ghost" onClick={() => { signOut(); setMobileOpen(false); }}>Sign Out</Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" asChild onClick={() => setMobileOpen(false)}>
+                  <Link to="/login">Log In</Link>
+                </Button>
+                <Button variant="hero" asChild onClick={() => setMobileOpen(false)}>
+                  <Link to="/courses">Start Learning</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       )}
