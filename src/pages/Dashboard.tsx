@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Play, BookOpen, LogOut, RefreshCw } from "lucide-react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import {
+  Play, BookOpen, LogOut, GraduationCap, CheckCircle2, Clock,
+  TrendingUp, Flame, Award, MessageSquare, HelpCircle, ArrowRight,
+  Sparkles, ChevronRight, Download, Zap, LayoutDashboard, Compass, User,
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -25,65 +27,48 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourse[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-
-  const clearAndRefresh = async () => {
-    console.log('🧹 Clearing local storage and refreshing...');
-    localStorage.clear();
-    await signOut();
-    navigate('/login');
-  };
-
-  const fetchData = useCallback(async () => {
-    if (!user) return;
-
-    setLoading(true);
-    try {
-      // Fetch enrolled courses
-      const { data: enrollments, error: enrollError } = await supabase
-        .from("enrollments")
-        .select(`
-          id,
-          progress,
-          courses (
-            id,
-            title,
-            category,
-            duration,
-            level
-          )
-        `)
-        .eq("user_id", user.id);
-
-      if (enrollError) {
-        console.error("Error fetching enrollments:", enrollError);
-      } else {
-        const courses: EnrolledCourse[] = (enrollments || []).map(enrollment => ({
-          id: enrollment.courses.id,
-          title: enrollment.courses.title,
-          progress: enrollment.progress || 0,
-          total_modules: 10, // Placeholder
-          completed_modules: Math.floor((enrollment.progress || 0) / 10),
-          category: enrollment.courses.category
-        }));
-        setEnrolledCourses(courses);
-      }
-    } catch (error) {
-      console.error("Error fetching dashboard data:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
-
-  const refreshUserData = async () => {
-    setRefreshing(true);
-    await fetchData();
-    setRefreshing(false);
-  };
 
   useEffect(() => {
-    void fetchData();
-  }, [fetchData]);
+    if (authLoading) return;
+    if (!user) { navigate("/login"); return; }
+
+    const fetchData = async () => {
+      setLoading(true);
+      const [profileRes, enrollRes, activityRes, scoresRes, coursesRes] = await Promise.all([
+        supabase.from("profiles").select("display_name").eq("user_id", user.id).maybeSingle(),
+        supabase.from("enrollments").select("id, progress, completed_modules, course_id, courses(title, total_modules, category)").eq("user_id", user.id),
+        supabase.from("activity_log").select("action, icon, created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(5),
+        supabase.from("quiz_scores").select("score").eq("user_id", user.id),
+        supabase.from("courses").select("id, title, category, level, duration"),
+      ]);
+
+      setProfile(profileRes.data);
+      const enrolledIds = new Set<string>();
+      if (enrollRes.data) {
+        setEnrolledCourses(
+          enrollRes.data.map((e: any) => {
+            enrolledIds.add(e.course_id);
+            return {
+              id: e.id, title: e.courses?.title ?? "Unknown Course",
+              progress: e.progress, total_modules: e.courses?.total_modules ?? 1,
+              completed_modules: e.completed_modules, category: e.courses?.category ?? "",
+            };
+          })
+        );
+        const totalMods = enrollRes.data.reduce((a: number, e: any) => a + e.completed_modules, 0);
+        setTotalHours(Math.round(totalMods * 2.5));
+      }
+      setActivity(activityRes.data ?? []);
+      if (scoresRes.data && scoresRes.data.length > 0) {
+        setAvgScore(Math.round(scoresRes.data.reduce((a: number, s: any) => a + s.score, 0) / scoresRes.data.length));
+      }
+      if (coursesRes.data) {
+        setRecommended(coursesRes.data.filter((c: any) => !enrolledIds.has(c.id)).slice(0, 3));
+      }
+      setLoading(false);
+    };
+    fetchData();
+  }, [user, authLoading, navigate]);
 
   if (authLoading || loading) {
     return (
@@ -101,54 +86,18 @@ const Dashboard = () => {
     );
   }
 
-  const displayName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'User';
+  const displayName = profile?.display_name || user?.email?.split("@")[0] || "Student";
   const totalProgress = enrolledCourses.length > 0
     ? Math.round(enrolledCourses.reduce((sum, course) => sum + course.progress, 0) / enrolledCourses.length)
     : 0;
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <main className="container py-10 space-y-8">
-        {/* Welcome Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between"
-        >
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Welcome {displayName} 👋</h1>
-            <p className="text-muted-foreground mt-1">
-              {enrolledCourses.length > 0
-                ? <>You've completed <span className="font-semibold text-primary">{totalProgress}%</span> of your active courses. Keep going!</>
-                : "You haven't enrolled in any courses yet. Explore our catalog!"}
-            </p>
-          </div>
-          <div className="flex gap-3 mt-4 md:mt-0">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={refreshUserData}
-              disabled={refreshing}
-            >
-              <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-              {refreshing ? 'Refreshing...' : 'Refresh Data'}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={clearAndRefresh}
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Clear & Re-login
-            </Button>
-            <Button variant="default" asChild>
-              <Link to="/courses">
-                <Play className="mr-2 h-4 w-4" />
-                Continue Learning
-              </Link>
-            </Button>
+    <div className="min-h-screen bg-background flex">
+      {/* Sidebar */}
+      <aside className="w-[240px] border-r border-border bg-card p-6 hidden lg:flex flex-col shrink-0">
+        <Link to="/" className="flex items-center gap-2.5 mb-10">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-primary">
+            <GraduationCap className="h-5 w-5 text-primary-foreground" />
           </div>
         </motion.div>
 

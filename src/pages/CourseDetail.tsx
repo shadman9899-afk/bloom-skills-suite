@@ -1,24 +1,10 @@
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Clock, BarChart2, CheckCircle, ChevronDown, BookOpen, Award, Users, Headphones, FileText, Video, Briefcase, Star, Zap, Download, MessageCircle, Play } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Clock, BarChart2, CheckCircle, ChevronDown, BookOpen, Award, Users, Headphones, FileText, Video, Briefcase, Star, Zap, Download, MessageCircle } from "lucide-react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { supabase } from "@/integrations/supabase/client";
-
-interface CourseDetailRow {
-  id: string;
-  title: string;
-  description: string;
-  duration: string;
-  level: string;
-  category: string;
-  price: number;
-  image_url: string | null;
-  is_published: boolean;
-  instructor_name: string | null;
-}
 
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -30,22 +16,10 @@ const CourseDetail = () => {
     const fetchCourseDetail = async () => {
       if (!id) return;
 
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("courses")
-        .select("id, title, description, category, duration, level, price, image_url, is_published, instructor_name")
-        .eq("id", id)
-        .eq("is_published", true)
-        .single();
-
-      if (error) {
-        console.error("Failed to fetch course detail", error);
-        setCourse(null);
-      } else {
-        setCourse(data as CourseDetailRow);
-      }
-      setLoading(false);
-    };
+const iconMap: Record<string, React.ElementType> = {
+  video: Video, file: FileText, book: BookOpen, users: Users,
+  headphones: Headphones, award: Award, download: Download, message: MessageCircle,
+};
 
     void fetchCourseDetail();
   }, [id]);
@@ -143,6 +117,23 @@ const CourseDetail = () => {
                   <div className="text-sm text-gray-500">One-time payment</div>
                 </div>
               </div>
+              <p className="mt-1 text-sm text-muted-foreground">One-time payment · Lifetime access</p>
+              <Button variant="hero" size="lg" className="mt-6 w-full" asChild>
+                <Link to={`/payment/${id}`}>Enroll Now</Link>
+              </Button>
+              <Button variant="heroOutline" size="lg" className="mt-3 w-full">
+                Try Free Preview
+              </Button>
+              <Button variant="outline" size="lg" className="mt-3 w-full gap-2" onClick={() => {
+                const link = document.createElement('a');
+                link.href = `data:text/plain;charset=utf-8,${encodeURIComponent(`${course.title} — Course Brochure\n\n${course.desc}\n\nDuration: ${course.duration}\nLevel: ${course.level}\nPrice: $${course.price}\n\nWhat You'll Learn:\n${course.outcomes.map(o => `• ${o}`).join('\n')}\n\nCurriculum:\n${course.curriculum.map((m, i) => `Module ${i+1}: ${m.title} (${m.lessons} lessons, ${m.duration})\n${m.topics.map(t => `  - ${t}`).join('\n')}`).join('\n\n')}\n\nTools: ${course.tools.join(', ')}\n\nInstructor: ${course.instructor} — ${course.instructorRole}\n\nEnroll at slateacademy.com`)}`;
+                link.download = `${course.title.replace(/\s+/g, '-')}-Brochure.txt`;
+                link.click();
+              }}>
+                <Download className="h-4 w-4" />
+                Download Brochure
+              </Button>
+              <p className="mt-4 text-center text-xs text-muted-foreground">30-day money-back guarantee · No risk</p>
 
               <p className="text-gray-700 text-lg leading-relaxed mb-6">{course.description}</p>
 
