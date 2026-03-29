@@ -1,32 +1,10 @@
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Clock, BarChart2, CheckCircle, ChevronDown, BookOpen, Award, Users, Headphones, FileText, Video, Briefcase, Star, Zap, Download, MessageCircle } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { supabase } from "@/integrations/supabase/client";
-
-interface CourseDetailRow {
-  id: string;
-  title: string;
-  desc: string;
-  duration: string;
-  level: string;
-  category: string;
-  price: number;
-  originalPrice?: number;
-  instructor?: string;
-  instructorRole?: string;
-  instructorBio?: string;
-  outcomes?: string[];
-  curriculum?: { title: string; lessons: number; duration: string; topics: string[] }[];
-  includes?: { icon: string; text: string }[];
-  afterCourse?: { title: string; desc: string }[];
-  tools?: string[];
-  stats?: { students: number; rating: number; reviews: number; projects: number };
-  image_url?: string;
-}
 
 const courseData: Record<string, {
   title: string; desc: string; duration: string; level: string; category: string;
@@ -275,7 +253,6 @@ const defaultCourse = {
   tools: ["Industry Standard Tools"],
 };
 
-
 const iconMap: Record<string, React.ElementType> = {
   video: Video, file: FileText, book: BookOpen, users: Users,
   headphones: Headphones, award: Award, download: Download, message: MessageCircle,
@@ -346,7 +323,7 @@ const CourseDetail = () => {
               </Button>
               <Button variant="outline" size="lg" className="mt-3 w-full gap-2" onClick={() => {
                 const link = document.createElement('a');
-                link.href = `data:text/plain;charset=utf-8,${encodeURIComponent(`${course.title} — Course Brochure\n\n${course.desc}\n\nDuration: ${course.duration}\nLevel: ${course.level}\nPrice: $${course.price}\n\nWhat You'll Learn:\n${course.outcomes.map(o => `• ${o}`).join('\n')}\n\nCurriculum:\n${course.curriculum.map((m, i) => `Module ${i + 1}: ${m.title} (${m.lessons} lessons, ${m.duration})\n${m.topics.map(t => `  - ${t}`).join('\n')}`).join('\n\n')}\n\nTools: ${course.tools.join(', ')}\n\nInstructor: ${course.instructor} — ${course.instructorRole}\n\nEnroll at slateacademy.com`)}`;
+                link.href = `data:text/plain;charset=utf-8,${encodeURIComponent(`${course.title} — Course Brochure\n\n${course.desc}\n\nDuration: ${course.duration}\nLevel: ${course.level}\nPrice: $${course.price}\n\nWhat You'll Learn:\n${course.outcomes.map(o => `• ${o}`).join('\n')}\n\nCurriculum:\n${course.curriculum.map((m, i) => `Module ${i+1}: ${m.title} (${m.lessons} lessons, ${m.duration})\n${m.topics.map(t => `  - ${t}`).join('\n')}`).join('\n\n')}\n\nTools: ${course.tools.join(', ')}\n\nInstructor: ${course.instructor} — ${course.instructorRole}\n\nEnroll at slateacademy.com`)}`;
                 link.download = `${course.title.replace(/\s+/g, '-')}-Brochure.txt`;
                 link.click();
               }}>

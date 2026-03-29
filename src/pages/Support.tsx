@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Search, CreditCard, BookOpen, User, Wrench, ChevronDown, MessageCircle, Mail, Phone, CheckCircle, AlertCircle } from "lucide-react";
+import { Search, CreditCard, BookOpen, User, Wrench, ChevronDown, MessageCircle, Mail, Phone } from "lucide-react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
 
 const helpCategories = [
   { icon: CreditCard, title: "Payments", desc: "Billing, refunds & invoices" },
@@ -26,69 +23,6 @@ const faqs = [
 const Support = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [issueType, setIssueType] = useState("");
-  const [subject, setSubject] = useState("");
-  const [description, setDescription] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const { user } = useAuth();
-
-  const handleSubmitTicket = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!user) {
-      toast.error("Please log in to submit a support ticket");
-      return;
-    }
-
-    if (!issueType || !subject.trim() || !description.trim()) {
-      toast.error("Please fill in all required fields");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const ticketData = {
-        user_id: user.id,
-        issue_type: issueType,
-        subject: subject.trim(),
-        description: description.trim(),
-      };
-
-      console.log("Submitting ticket with data:", ticketData);
-
-      const { data, error } = await supabase
-        .from("support_tickets")
-        .insert([ticketData])
-        .select();
-
-      if (error) {
-        console.error("Error submitting ticket:", error.message);
-        console.error("Error details:", error);
-        toast.error(`Failed to submit ticket: ${error.message}`);
-        return;
-      }
-
-      console.log("Ticket submitted successfully:", data);
-
-      // Success
-      setSubmitSuccess(true);
-      setIssueType("");
-      setSubject("");
-      setDescription("");
-      toast.success("Support ticket submitted successfully! We'll get back to you soon.");
-
-      // Reset success message after 5 seconds
-      setTimeout(() => setSubmitSuccess(false), 5000);
-
-    } catch (err) {
-      console.error("Unexpected error:", err);
-      const errorMessage = err instanceof Error ? err.message : "Unknown error";
-      toast.error(`An unexpected error occurred: ${errorMessage}`);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -157,7 +91,7 @@ const Support = () => {
           <div className="mt-6 grid gap-4 sm:grid-cols-3">
             {[
               { icon: MessageCircle, title: "Live Chat", desc: "Chat with our team in real-time", action: "Start Chat" },
-              { icon: Mail, title: "Email", desc: "slateacademy3@gmail.com", action: "Send Email" },
+              { icon: Mail, title: "Email", desc: "support@slateacademy.com", action: "Send Email" },
               { icon: Phone, title: "Phone", desc: "Mon-Fri, 9AM-6PM EST", action: "Call Now" },
             ].map((c) => (
               <div key={c.title} className="rounded-xl border border-border bg-card p-6 shadow-card text-center">
@@ -174,86 +108,26 @@ const Support = () => {
 
         <div>
           <h2 className="text-2xl font-bold text-foreground">Submit a Ticket</h2>
-          <div className="mt-6 max-w-lg rounded-xl border border-border bg-card p-6 shadow-card">
-            {submitSuccess && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-4 flex items-center gap-2 rounded-lg bg-green-50 p-3 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+          <div className="mt-6 max-w-lg rounded-xl border border-border bg-card p-6 shadow-card space-y-4">
+            <div>
+              <label className="text-sm font-medium text-foreground">Issue Type</label>
+              <select
+                value={issueType}
+                onChange={(e) => setIssueType(e.target.value)}
+                className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               >
-                <CheckCircle className="h-5 w-5" />
-                <span className="text-sm font-medium">Ticket submitted successfully!</span>
-              </motion.div>
-            )}
-
-            {!user && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-4 flex items-center gap-2 rounded-lg bg-amber-50 p-3 text-amber-800 dark:bg-amber-900/20 dark:text-amber-400"
-              >
-                <AlertCircle className="h-5 w-5" />
-                <span className="text-sm">Please log in to submit a support ticket.</span>
-              </motion.div>
-            )}
-
-            <form onSubmit={handleSubmitTicket} className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-foreground">Issue Type *</label>
-                <select
-                  value={issueType}
-                  onChange={(e) => setIssueType(e.target.value)}
-                  className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                  disabled={isSubmitting}
-                >
-                  <option value="">Select an issue type</option>
-                  <option value="payment">Payment Issue</option>
-                  <option value="course">Course Access</option>
-                  <option value="account">Account Problem</option>
-                  <option value="technical">Technical Bug</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-foreground">Subject *</label>
-                <input
-                  type="text"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="Brief description of the issue"
-                  disabled={isSubmitting}
-                  maxLength={100}
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-foreground">Description *</label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="mt-1.5 w-full rounded-lg border border-input bg-background p-4 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                  rows={4}
-                  placeholder="Please provide detailed information about your issue, including steps to reproduce if applicable..."
-                  disabled={isSubmitting}
-                  maxLength={1000}
-                />
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {description.length}/1000 characters
-                </p>
-              </div>
-
-              <Button
-                type="submit"
-                variant="hero"
-                size="lg"
-                disabled={isSubmitting || !user}
-                className="w-full"
-              >
-                {isSubmitting ? "Submitting..." : "Submit Ticket"}
-              </Button>
-            </form>
+                <option value="">Select an issue type</option>
+                <option value="payment">Payment Issue</option>
+                <option value="course">Course Access</option>
+                <option value="account">Account Problem</option>
+                <option value="technical">Technical Bug</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Description</label>
+              <textarea className="mt-1.5 w-full rounded-lg border border-input bg-background p-4 text-sm focus:outline-none focus:ring-2 focus:ring-ring" rows={4} placeholder="Describe your issue..." />
+            </div>
+            <Button variant="hero" size="lg">Submit Ticket</Button>
           </div>
         </div>
       </div>
