@@ -5,6 +5,16 @@ import type { Database } from './types';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
+// Check if environment variables are properly set
+if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  console.error('❌ Supabase environment variables are missing!');
+  console.error('VITE_SUPABASE_URL:', SUPABASE_URL ? '✅ Set' : '❌ Missing');
+  console.error('VITE_SUPABASE_PUBLISHABLE_KEY:', SUPABASE_PUBLISHABLE_KEY ? '✅ Set' : '❌ Missing');
+} else {
+  console.log('✅ Supabase environment variables loaded successfully');
+  console.log('🔗 Supabase URL:', SUPABASE_URL);
+}
+
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
@@ -13,5 +23,15 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+  }
+});
+
+// Test connection on initialization
+supabase.auth.getSession().then(({ data, error }) => {
+  if (error) {
+    console.error('❌ Supabase connection failed:', error.message);
+  } else {
+    console.log('✅ Supabase connected successfully');
+    console.log('🔐 Auth session status:', data.session ? 'Active' : 'No active session');
   }
 });

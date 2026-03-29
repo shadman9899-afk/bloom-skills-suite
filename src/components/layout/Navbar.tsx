@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { GraduationCap, Menu, X, LayoutDashboard, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { ConnectionStatus } from "@/components/ConnectionStatus";
 
 const navLinks = [
   { label: "Home", path: "/" },
@@ -15,7 +16,7 @@ const navLinks = [
 const Navbar = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-lg">
@@ -32,11 +33,10 @@ const Navbar = () => {
             <Link
               key={link.path}
               to={link.path}
-              className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                location.pathname === link.path
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+              className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${location.pathname === link.path
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
             >
               {link.label}
             </Link>
@@ -44,6 +44,7 @@ const Navbar = () => {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
+          <ConnectionStatus />
           {user ? (
             <>
               <Button variant="hero" size="default" asChild>
@@ -51,6 +52,11 @@ const Navbar = () => {
                   <LayoutDashboard className="mr-2 h-4 w-4" />Dashboard
                 </Link>
               </Button>
+              {isAdmin && (
+                <Button variant="secondary" size="default" asChild>
+                  <Link to="/admin">Admin</Link>
+                </Button>
+              )}
               <Button variant="ghost" size="icon" onClick={signOut} title="Sign out">
                 <LogOut className="h-4 w-4" />
               </Button>
@@ -83,11 +89,10 @@ const Navbar = () => {
                 key={link.path}
                 to={link.path}
                 onClick={() => setMobileOpen(false)}
-                className={`rounded-md px-4 py-3 text-sm font-medium transition-colors ${
-                  location.pathname === link.path
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                className={`rounded-md px-4 py-3 text-sm font-medium transition-colors ${location.pathname === link.path
+                  ? "bg-accent text-accent-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+                  }`}
               >
                 {link.label}
               </Link>
@@ -99,6 +104,11 @@ const Navbar = () => {
                 <Button variant="hero" asChild onClick={() => setMobileOpen(false)}>
                   <Link to="/dashboard">Dashboard</Link>
                 </Button>
+                {isAdmin && (
+                  <Button variant="secondary" asChild onClick={() => setMobileOpen(false)}>
+                    <Link to="/admin">Admin Panel</Link>
+                  </Button>
+                )}
                 <Button variant="ghost" onClick={() => { signOut(); setMobileOpen(false); }}>Sign Out</Button>
               </>
             ) : (

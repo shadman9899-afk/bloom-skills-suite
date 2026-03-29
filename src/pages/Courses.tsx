@@ -1,10 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useSearchParams } from "react-router-dom";
 import { Clock, BarChart2, Search, Palette, Code, Megaphone, BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { supabase } from "@/integrations/supabase/client";
+
+interface CourseRow {
+  id: string;
+  title: string;
+  desc: string;
+  duration: string;
+  level: string;
+  category: string;
+  price: number;
+  image_url: string | null;
+  is_published: boolean;
+}
 
 import uiuxImg from "@/assets/courses/uiux-design.jpg";
 import fullstackImg from "@/assets/courses/fullstack-dev.jpg";
@@ -63,13 +76,37 @@ const categories = ["All", "Design", "Coding", "Marketing", "Data"];
 const levels = ["All", "Beginner", "Intermediate"];
 
 const Courses = () => {
+  const [courses, setCourses] = useState<CourseRow[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const initialCat = searchParams.get("category") || "All";
   const [category, setCategory] = useState(initialCat.charAt(0).toUpperCase() + initialCat.slice(1));
   const [level, setLevel] = useState("All");
   const [search, setSearch] = useState("");
 
-  const filtered = allCourses.filter((c) => {
+  useEffect(() => {
+    const fetchCourseData = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("courses")
+        .select("id, title, description, category, duration, level, price, image_url, is_published")
+        .eq("is_published", true)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Failed to fetch courses", error);
+        setCourses([]);
+      } else {
+        setCourses((data as CourseRow[]) || []);
+      }
+      setLoading(false);
+    };
+
+    void fetchCourseData();
+  }, []);
+
+  const sourceCourses = courses.length > 0 ? courses : allCourses;
+  const filtered = sourceCourses.filter((c) => {
     if (category !== "All" && c.category !== category) return false;
     if (level !== "All" && c.level !== level) return false;
     if (search && !c.title.toLowerCase().includes(search.toLowerCase())) return false;
@@ -127,9 +164,8 @@ const Courses = () => {
               <button
                 key={c}
                 onClick={() => setCategory(c)}
-                className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                  category === c ? "gradient-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-accent"
-                }`}
+                className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${category === c ? "gradient-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-accent"
+                  }`}
               >
                 {c}
               </button>
@@ -140,9 +176,8 @@ const Courses = () => {
               <button
                 key={l}
                 onClick={() => setLevel(l)}
-                className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  level === l ? "bg-foreground text-background" : "bg-secondary text-secondary-foreground hover:bg-accent"
-                }`}
+                className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${level === l ? "bg-foreground text-background" : "bg-secondary text-secondary-foreground hover:bg-accent"
+                  }`}
               >
                 {l}
               </button>
@@ -162,7 +197,12 @@ const Courses = () => {
               className="group rounded-xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1"
             >
               <div className="h-40 rounded-t-xl overflow-hidden">
-                <img src={course.image} alt={course.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+                <img
+                  src={(course as CourseRow).image_url || (course as any).image || "https://via.placeholder.com/400x240?text=No+Image"}
+                  alt={course.title}
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
               </div>
               <div className="p-5">
                 <div className="flex gap-2">
