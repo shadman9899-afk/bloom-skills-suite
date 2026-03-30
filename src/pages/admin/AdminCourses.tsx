@@ -92,9 +92,8 @@ const AdminCourses = () => {
   }, []);
 
   useEffect(() => {
-    if (!isAdmin) return;
     fetchCourses();
-  }, [fetchCourses, isAdmin]);
+  }, [fetchCourses]);
 
   const resetForm = () => {
     setForm(defaultCourseForm);

@@ -52,11 +52,6 @@ const Navbar = () => {
                   <LayoutDashboard className="mr-2 h-4 w-4" />Dashboard
                 </Link>
               </Button>
-              {isAdmin && (
-                <Button variant="secondary" size="default" asChild>
-                  <Link to="/admin">Admin</Link>
-                </Button>
-              )}
               <Button variant="ghost" size="icon" onClick={signOut} title="Sign out">
                 <LogOut className="h-4 w-4" />
               </Button>
@@ -104,11 +99,6 @@ const Navbar = () => {
                 <Button variant="hero" asChild onClick={() => setMobileOpen(false)}>
                   <Link to="/dashboard">Dashboard</Link>
                 </Button>
-                {isAdmin && (
-                  <Button variant="secondary" asChild onClick={() => setMobileOpen(false)}>
-                    <Link to="/admin">Admin Panel</Link>
-                  </Button>
-                )}
                 <Button variant="ghost" onClick={() => { signOut(); setMobileOpen(false); }}>Sign Out</Button>
               </>
             ) : (
