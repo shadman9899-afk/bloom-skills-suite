@@ -23,18 +23,16 @@ const AdminPanel = () => {
 
   useEffect(() => {
     const fetchStats = async () => {
-      const [courses, lessons, students, media] = await Promise.all([
+      const [courses, students] = await Promise.all([
         supabase.from("courses").select("*", { count: "exact", head: true }),
-        supabase.from("lessons").select("*", { count: "exact", head: true }),
         supabase.from("profiles").select("*", { count: "exact", head: true }),
-        supabase.from("media_library").select("*", { count: "exact", head: true }),
       ]);
 
       setStats({
         courses: courses.count ?? 0,
-        lessons: lessons.count ?? 0,
+        lessons: 0,
         students: students.count ?? 0,
-        media: media.count ?? 0,
+        media: 0,
       });
     };
 

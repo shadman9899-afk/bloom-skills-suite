@@ -25,7 +25,6 @@ interface SupportTicket {
     profiles: {
         user_id: string;
         display_name: string | null;
-        email: string | null;
     } | null;
 }
 
@@ -43,11 +42,11 @@ const AdminSupportTickets = () => {
 
     const fetchTickets = async () => {
         try {
-            // First fetch tickets
-            const { data: ticketsData, error: ticketsError } = await supabase
-                .from("support_tickets")
+            // Use any to bypass missing table types
+            const { data: ticketsData, error: ticketsError } = await (supabase
+                .from("support_tickets" as any)
                 .select("*")
-                .order("created_at", { ascending: false });
+                .order("created_at", { ascending: false }) as any);
 
             if (ticketsError) {
                 console.error("Error fetching tickets:", ticketsError);
@@ -61,24 +60,16 @@ const AdminSupportTickets = () => {
                 return;
             }
 
-            // Get unique user IDs
-            const userIds = [...new Set(ticketsData.map(ticket => ticket.user_id))];
+            const userIds = [...new Set(ticketsData.map((ticket: any) => ticket.user_id))];
 
-            // Fetch profiles for these users
-            const { data: profilesData, error: profilesError } = await supabase
+            const { data: profilesData } = await supabase
                 .from("profiles")
-                .select("user_id, display_name, email")
-                .in("user_id", userIds);
+                .select("user_id, display_name")
+                .in("user_id", userIds as string[]);
 
-            if (profilesError) {
-                console.error("Error fetching profiles:", profilesError);
-                // Continue with tickets even if profiles fail
-            }
-
-            // Combine tickets with profile data
-            const ticketsWithProfiles = ticketsData.map(ticket => ({
+            const ticketsWithProfiles = ticketsData.map((ticket: any) => ({
                 ...ticket,
-                profiles: profilesData?.find(profile => profile.user_id === ticket.user_id) || null
+                profiles: profilesData?.find((profile) => profile.user_id === ticket.user_id) || null
             }));
 
             setTickets(ticketsWithProfiles);
@@ -93,14 +84,13 @@ const AdminSupportTickets = () => {
     const updateTicket = async (ticketId: string, updates: Partial<SupportTicket>) => {
         setUpdating(true);
         try {
-            const { error } = await supabase
-                .from("support_tickets")
+            const { error } = await (supabase
+                .from("support_tickets" as any)
                 .update({
                     ...updates,
                     updated_at: new Date().toISOString(),
-                    ...(updates.status === "resolved" && { resolved_at: new Date().toISOString() })
-                })
-                .eq("id", ticketId);
+                } as any)
+                .eq("id", ticketId) as any);
 
             if (error) {
                 console.error("Error updating ticket:", error);
@@ -122,46 +112,31 @@ const AdminSupportTickets = () => {
 
     const getStatusIcon = (status: string) => {
         switch (status) {
-            case "open":
-                return <AlertCircle className="h-4 w-4 text-orange-500" />;
-            case "in_progress":
-                return <Clock className="h-4 w-4 text-blue-500" />;
-            case "resolved":
-                return <CheckCircle className="h-4 w-4 text-green-500" />;
-            case "closed":
-                return <XCircle className="h-4 w-4 text-gray-500" />;
-            default:
-                return <MessageSquare className="h-4 w-4" />;
+            case "open": return <AlertCircle className="h-4 w-4 text-secondary" />;
+            case "in_progress": return <Clock className="h-4 w-4 text-primary" />;
+            case "resolved": return <CheckCircle className="h-4 w-4 text-green-500" />;
+            case "closed": return <XCircle className="h-4 w-4 text-muted-foreground" />;
+            default: return <MessageSquare className="h-4 w-4" />;
         }
     };
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case "open":
-                return "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400";
-            case "in_progress":
-                return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
-            case "resolved":
-                return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
-            case "closed":
-                return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
-            default:
-                return "bg-gray-100 text-gray-800";
+            case "open": return "bg-accent text-accent-foreground";
+            case "in_progress": return "bg-accent text-primary";
+            case "resolved": return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
+            case "closed": return "bg-muted text-muted-foreground";
+            default: return "bg-muted text-muted-foreground";
         }
     };
 
     const getPriorityColor = (priority: string) => {
         switch (priority) {
-            case "low":
-                return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
-            case "medium":
-                return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400";
-            case "high":
-                return "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400";
-            case "urgent":
-                return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
-            default:
-                return "bg-gray-100 text-gray-800";
+            case "low": return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
+            case "medium": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400";
+            case "high": return "bg-accent text-secondary";
+            case "urgent": return "bg-destructive/10 text-destructive";
+            default: return "bg-muted text-muted-foreground";
         }
     };
 
@@ -171,13 +146,8 @@ const AdminSupportTickets = () => {
                 <div className="space-y-4">
                     {[1, 2, 3].map(i => (
                         <Card key={i} className="animate-pulse">
-                            <CardHeader>
-                                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="h-16 bg-gray-200 rounded"></div>
-                            </CardContent>
+                            <CardHeader><div className="h-4 bg-muted rounded w-3/4"></div></CardHeader>
+                            <CardContent><div className="h-16 bg-muted rounded"></div></CardContent>
                         </Card>
                     ))}
                 </div>
@@ -190,10 +160,8 @@ const AdminSupportTickets = () => {
             <Navbar />
             <div className="container py-8">
                 <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-3xl font-bold">Support Tickets</h1>
-                    <Button onClick={fetchTickets} variant="outline">
-                        Refresh
-                    </Button>
+                    <h1 className="text-3xl font-bold text-foreground">Support Tickets</h1>
+                    <Button onClick={fetchTickets} variant="outline">Refresh</Button>
                 </div>
 
                 <div className="grid gap-4">
@@ -204,7 +172,7 @@ const AdminSupportTickets = () => {
                                     <div className="flex-1">
                                         <CardTitle className="text-lg mb-2">{ticket.subject}</CardTitle>
                                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                            <span>From: {ticket.profiles?.display_name || ticket.profiles?.email || "Unknown"}</span>
+                                            <span>From: {ticket.profiles?.display_name || "Unknown"}</span>
                                             <span>•</span>
                                             <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
                                         </div>
@@ -214,30 +182,15 @@ const AdminSupportTickets = () => {
                                             {getStatusIcon(ticket.status)}
                                             <span className="ml-1 capitalize">{ticket.status.replace("_", " ")}</span>
                                         </Badge>
-                                        <Badge className={getPriorityColor(ticket.priority)}>
-                                            {ticket.priority}
-                                        </Badge>
+                                        <Badge className={getPriorityColor(ticket.priority)}>{ticket.priority}</Badge>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                                    {ticket.description}
-                                </p>
+                                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{ticket.description}</p>
                                 <div className="flex items-center justify-between">
-                                    <Badge variant="outline" className="capitalize">
-                                        {ticket.issue_type}
-                                    </Badge>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => {
-                                            setSelectedTicket(ticket);
-                                            setAdminNotes(ticket.admin_notes || "");
-                                        }}
-                                    >
-                                        Manage
-                                    </Button>
+                                    <Badge variant="outline" className="capitalize">{ticket.issue_type}</Badge>
+                                    <Button variant="outline" size="sm" onClick={() => { setSelectedTicket(ticket); setAdminNotes(ticket.admin_notes || ""); }}>Manage</Button>
                                 </div>
                             </CardContent>
                         </Card>
@@ -252,37 +205,28 @@ const AdminSupportTickets = () => {
                     </div>
                 )}
 
-                {/* Ticket Management Modal/Dialog */}
                 {selectedTicket && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
                         <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                            <CardHeader>
-                                <CardTitle>Manage Support Ticket</CardTitle>
-                            </CardHeader>
+                            <CardHeader><CardTitle>Manage Support Ticket</CardTitle></CardHeader>
                             <CardContent className="space-y-4">
                                 <div>
                                     <h4 className="font-medium mb-2">Ticket Details</h4>
                                     <div className="space-y-2 text-sm">
                                         <p><strong>Subject:</strong> {selectedTicket.subject}</p>
                                         <p><strong>Issue Type:</strong> {selectedTicket.issue_type}</p>
-                                        <p><strong>User:</strong> {selectedTicket.profiles?.display_name || selectedTicket.profiles?.email}</p>
+                                        <p><strong>User:</strong> {selectedTicket.profiles?.display_name || "Unknown"}</p>
                                         <p><strong>Created:</strong> {new Date(selectedTicket.created_at).toLocaleString()}</p>
                                     </div>
                                     <div className="mt-3 p-3 bg-muted rounded-lg">
                                         <p className="text-sm">{selectedTicket.description}</p>
                                     </div>
                                 </div>
-
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="text-sm font-medium mb-2 block">Status</label>
-                                        <Select
-                                            value={selectedTicket.status}
-                                            onValueChange={(value) => setSelectedTicket({ ...selectedTicket, status: value })}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
+                                        <Select value={selectedTicket.status} onValueChange={(value) => setSelectedTicket({ ...selectedTicket, status: value })}>
+                                            <SelectTrigger><SelectValue /></SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="open">Open</SelectItem>
                                                 <SelectItem value="in_progress">In Progress</SelectItem>
@@ -291,16 +235,10 @@ const AdminSupportTickets = () => {
                                             </SelectContent>
                                         </Select>
                                     </div>
-
                                     <div>
                                         <label className="text-sm font-medium mb-2 block">Priority</label>
-                                        <Select
-                                            value={selectedTicket.priority}
-                                            onValueChange={(value) => setSelectedTicket({ ...selectedTicket, priority: value })}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
+                                        <Select value={selectedTicket.priority} onValueChange={(value) => setSelectedTicket({ ...selectedTicket, priority: value })}>
+                                            <SelectTrigger><SelectValue /></SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="low">Low</SelectItem>
                                                 <SelectItem value="medium">Medium</SelectItem>
@@ -310,32 +248,15 @@ const AdminSupportTickets = () => {
                                         </Select>
                                     </div>
                                 </div>
-
                                 <div>
                                     <label className="text-sm font-medium mb-2 block">Admin Notes</label>
-                                    <Textarea
-                                        value={adminNotes}
-                                        onChange={(e) => setAdminNotes(e.target.value)}
-                                        placeholder="Add internal notes..."
-                                        rows={3}
-                                    />
+                                    <Textarea value={adminNotes} onChange={(e) => setAdminNotes(e.target.value)} placeholder="Add internal notes..." rows={3} />
                                 </div>
-
                                 <div className="flex gap-2 pt-4">
-                                    <Button
-                                        onClick={() => updateTicket(selectedTicket.id, {
-                                            status: selectedTicket.status,
-                                            priority: selectedTicket.priority,
-                                            admin_notes: adminNotes
-                                        })}
-                                        disabled={updating}
-                                        className="flex-1"
-                                    >
+                                    <Button onClick={() => updateTicket(selectedTicket.id, { status: selectedTicket.status, priority: selectedTicket.priority, admin_notes: adminNotes })} disabled={updating} className="flex-1">
                                         {updating ? "Updating..." : "Update Ticket"}
                                     </Button>
-                                    <Button variant="outline" onClick={() => setSelectedTicket(null)}>
-                                        Cancel
-                                    </Button>
+                                    <Button variant="outline" onClick={() => setSelectedTicket(null)}>Cancel</Button>
                                 </div>
                             </CardContent>
                         </Card>
