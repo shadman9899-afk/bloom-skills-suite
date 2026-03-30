@@ -12,6 +12,10 @@ import CourseDetail from "./pages/CourseDetail.tsx";
 import Payment from "./pages/Payment.tsx";
 import Portfolio from "./pages/Portfolio.tsx";
 import Support from "./pages/Support.tsx";
+import SupportPayments from "./pages/support/SupportPayments.tsx";
+import SupportCourses from "./pages/support/SupportCourses.tsx";
+import SupportAccount from "./pages/support/SupportAccount.tsx";
+import SupportTechnical from "./pages/support/SupportTechnical.tsx";
 import AIChatbot from "./pages/AIChatbot.tsx";
 import Login from "./pages/Login.tsx";
 import Signup from "./pages/Signup.tsx";
@@ -46,6 +50,10 @@ const App = () => (
             <Route path="/payment/:id" element={<Payment />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/support/payments" element={<SupportPayments />} />
+            <Route path="/support/courses" element={<SupportCourses />} />
+            <Route path="/support/account" element={<SupportAccount />} />
+            <Route path="/support/technical" element={<SupportTechnical />} />
             <Route path="/ai-chat" element={<AIChatbot />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
