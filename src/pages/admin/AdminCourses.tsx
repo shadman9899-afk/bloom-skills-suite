@@ -65,7 +65,7 @@ const AdminCourses = () => {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  const { isAdmin } = useAuth();
+  const { user } = useAuth();
 
   const fetchCourses = useCallback(async () => {
     setLoading(true);

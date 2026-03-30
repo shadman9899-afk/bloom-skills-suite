@@ -131,13 +131,13 @@ const CourseDetail = () => {
                     <span className="text-gray-600">{course.level}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Users className="h-5 w-5 text-blue-600" />
-                    <span className="text-gray-600">Instructor: {course.instructor_name || "TBD"}</span>
+                    <Users className="h-5 w-5 text-primary" />
+                    <span className="text-muted-foreground">Modules: {course.total_modules}</span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-3xl font-bold text-blue-600">${course.price}</div>
-                  <div className="text-sm text-gray-500">One-time payment</div>
+                  <div className="text-3xl font-bold text-primary">Free</div>
+                  <div className="text-sm text-muted-foreground">Lifetime access</div>
                 </div>
               </div>
 
@@ -310,7 +310,7 @@ const CourseDetail = () => {
                   <Users className="h-8 w-8 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900">{course.instructor_name || "Expert Instructor"}</h3>
+                  <h3 className="text-xl font-semibold text-foreground">Expert Instructor</h3>
                   <p className="text-gray-600">Professional Developer & Educator</p>
                 </div>
               </div>
@@ -332,7 +332,7 @@ const CourseDetail = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
                 <Play className="h-5 w-5 mr-2" />
-                Enroll Now - ${course.price}
+                Enroll Now - Free
               </Button>
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
                 <MessageCircle className="h-5 w-5 mr-2" />
