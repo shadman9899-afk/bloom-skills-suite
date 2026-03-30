@@ -59,10 +59,10 @@ const Support = () => {
 
       console.log("Submitting ticket with data:", ticketData);
 
-      const { data, error } = await supabase
-        .from("support_tickets")
-        .insert([ticketData])
-        .select();
+      const { data, error } = await (supabase
+        .from("support_tickets" as any)
+        .insert([ticketData] as any)
+        .select() as any);
 
       if (error) {
         console.error("Error submitting ticket:", error.message);

@@ -10,13 +10,12 @@ import { supabase } from "@/integrations/supabase/client";
 interface CourseRow {
   id: string;
   title: string;
-  description: string;
-  duration: string;
-  level: string;
+  description: string | null;
+  duration: string | null;
+  level: string | null;
   category: string;
-  price: number;
   image_url: string | null;
-  is_published: boolean;
+  total_modules: number;
 }
 
 const categories = ["All", "Design", "Coding", "Marketing", "Data"];
@@ -36,8 +35,7 @@ const Courses = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from("courses")
-        .select("id, title, description, category, duration, level, price, image_url, is_published")
-        .eq("is_published", true)
+        .select("id, title, description, category, duration, level, image_url, total_modules")
         .order("created_at", { ascending: false });
 
       if (error) {

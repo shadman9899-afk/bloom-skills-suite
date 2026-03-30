@@ -65,7 +65,7 @@ const AdminCourses = () => {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  const { isAdmin } = useAuth();
+  const { user } = useAuth();
 
   const fetchCourses = useCallback(async () => {
     setLoading(true);
@@ -92,9 +92,8 @@ const AdminCourses = () => {
   }, []);
 
   useEffect(() => {
-    if (!isAdmin) return;
     fetchCourses();
-  }, [fetchCourses, isAdmin]);
+  }, [fetchCourses]);
 
   const resetForm = () => {
     setForm(defaultCourseForm);
@@ -245,17 +244,6 @@ const AdminCourses = () => {
 
   const courseCount = useMemo(() => courses.length, [courses]);
 
-  if (!isAdmin) {
-    return (
-      <div className="flex min-h-screen bg-gray-100">
-        <AdminSidebar />
-        <main className="flex-1 ml-64 p-8">
-          <h1 className="text-2xl font-bold text-red-600">Admin access required</h1>
-          <p className="mt-2 text-muted-foreground">You must be an administrator to manage courses.</p>
-        </main>
-      </div>
-    );
-  }
 
   return (
     <div className="flex min-h-screen bg-gray-100">

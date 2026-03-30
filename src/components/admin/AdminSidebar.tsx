@@ -95,7 +95,7 @@ const AdminSidebar = ({
             <p className="text-xs font-medium truncate">
               {profile?.display_name ?? "Admin"}
             </p>
-            <p className="text-xs text-gray-500 truncate">{profile?.email}</p>
+            <p className="text-xs text-gray-500 truncate">Admin</p>
           </div>
         </div>
         <button
