@@ -7,6 +7,20 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { supabase } from "@/integrations/supabase/client";
 
+import uiuxImg from "@/assets/courses/uiux-design.jpg";
+import fullstackImg from "@/assets/courses/fullstack-dev.jpg";
+import marketingImg from "@/assets/courses/digital-marketing.jpg";
+import dataImg from "@/assets/courses/data-analytics.jpg";
+import productImg from "@/assets/courses/product-design.jpg";
+import reactImg from "@/assets/courses/react-typescript.jpg";
+
+const categoryImageMap: Record<string, string> = {
+  Design: uiuxImg,
+  Coding: fullstackImg,
+  Marketing: marketingImg,
+  Data: dataImg,
+};
+
 interface CourseRow {
   id: string;
   title: string;
@@ -131,7 +145,7 @@ const Courses = () => {
                 >
                   <div className="h-40 rounded-t-xl overflow-hidden">
                     <img
-                      src={course.image_url || "https://via.placeholder.com/400x240?text=No+Image"}
+                      src={course.image_url || categoryImageMap[course.category] || productImg}
                       alt={course.title}
                       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
