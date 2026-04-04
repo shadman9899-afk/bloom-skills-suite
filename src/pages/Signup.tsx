@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { GraduationCap, Mail, Lock, User, AlertCircle, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { GraduationCap, Mail, Lock, User, AlertCircle, ArrowRight, Eye, EyeOff, Home } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -59,7 +59,9 @@ const Signup = () => {
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
                 <GraduationCap className="h-6 w-6 text-secondary-foreground" />
               </div>
-              <span className="text-2xl font-bold text-secondary-foreground tracking-tight">Slate Academy</span>
+              <span className="text-2xl font-bold text-secondary-foreground tracking-tight" onClick={() => navigate('/')}>
+                Slate Academy
+              </span>
             </div>
             <h2 className="text-4xl font-extrabold text-secondary-foreground leading-tight mb-4">
               Start learning<br />something new today
@@ -96,11 +98,37 @@ const Signup = () => {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="w-full max-w-[400px]"
         >
-          <div className="flex items-center gap-2 mb-10 lg:hidden">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-primary">
-              <GraduationCap className="h-5 w-5 text-primary-foreground" />
+          <div className="flex items-center justify-between gap-2 mb-10 lg:hidden">
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-primary">
+                <GraduationCap className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <span className="text-xl font-bold text-foreground tracking-tight" onClick={() => navigate('#')}>
+                Slate Academy
+              </span>
             </div>
-            <span className="text-xl font-bold text-foreground tracking-tight">Slate Academy</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/")}
+              className="gap-2"
+            >
+              <Home className="h-4 w-4" />
+              Home
+            </Button>
+          </div>
+
+          {/* Back to Home button for desktop */}
+          <div className="hidden lg:flex justify-end mb-6">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/")}
+              className="gap-2"
+            >
+              <Home className="h-4 w-4" />
+              Back to Home
+            </Button>
           </div>
 
           <div className="mb-8">

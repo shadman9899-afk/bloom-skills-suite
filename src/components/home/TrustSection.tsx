@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 
 const stats = [
-  { value: "50,000+", label: "Active Learners" },
+  { value: "5000+", label: "Active Learners" },
   { value: "200+", label: "Real-World Projects" },
   { value: "94%", label: "Success Rate" },
   { value: "150+", label: "Expert Mentors" },

@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Play, X, Github, Globe, Eye } from "lucide-react";
+import { ExternalLink, Play, X, Github, Globe, Eye, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const categories = ["All", "Design", "Coding", "Marketing", "Data"];
 
@@ -128,6 +131,25 @@ const videoTestimonials = [
 const Portfolio = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [playingVideo, setPlayingVideo] = useState<number | null>(null);
+  const [showWarning, setShowWarning] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleStartLearning = () => {
+    if (user) {
+      navigate("/dashboard");
+    } else {
+      setShowWarning(true);
+      toast({
+        title: "Login Required",
+        description: "Please login or create an account to access your dashboard.",
+        variant: "destructive",
+      });
+      // Auto-hide warning after 5 seconds
+      setTimeout(() => setShowWarning(false), 5000);
+    }
+  };
 
   const filteredProjects =
     activeCategory === "All"
@@ -167,6 +189,32 @@ const Portfolio = () => {
         </div>
       </section>
 
+      {/* Warning Banner */}
+      {showWarning && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md px-4"
+        >
+          <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-4 flex items-center gap-3 shadow-lg backdrop-blur-sm">
+            <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-destructive">Login Required</p>
+              <p className="text-xs text-destructive/80">Please login or create an account to access your dashboard.</p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowWarning(false)}
+              className="h-8 w-8 p-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </motion.div>
+      )}
+
       {/* Portfolio Cards */}
       <section className="container py-16">
         <div className="flex items-center justify-between flex-wrap gap-4">
@@ -176,11 +224,10 @@ const Portfolio = () => {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                  activeCategory === cat
+                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${activeCategory === cat
                     ? "gradient-primary text-primary-foreground"
                     : "bg-secondary text-secondary-foreground hover:bg-accent"
-                }`}
+                  }`}
               >
                 {cat}
               </button>
@@ -203,6 +250,7 @@ const Portfolio = () => {
                   src={project.thumbnail}
                   alt={project.title}
                   className="h-48 w-full object-cover transition-transform group-hover:scale-105"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/40 transition-colors flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
                   <a
@@ -299,6 +347,7 @@ const Portfolio = () => {
                         src={testimonial.thumbnail}
                         alt={testimonial.name}
                         className="w-full h-full object-cover"
+                        loading="lazy"
                       />
                       <div className="absolute inset-0 bg-foreground/20 flex items-center justify-center group-hover/play:bg-foreground/30 transition-colors">
                         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-card/90 shadow-lg group-hover/play:scale-110 transition-transform">
@@ -319,6 +368,7 @@ const Portfolio = () => {
                       src={testimonial.thumbnail}
                       alt={testimonial.name}
                       className="h-10 w-10 rounded-full object-cover border-2 border-border"
+                      loading="lazy"
                     />
                     <div>
                       <p className="text-sm font-semibold text-foreground">{testimonial.name}</p>
@@ -343,9 +393,19 @@ const Portfolio = () => {
         <p className="mx-auto mt-3 max-w-md text-muted-foreground">
           Join thousands of students creating real-world projects with expert mentorship.
         </p>
-        <Button variant="hero" size="lg" className="mt-6">
+        <Button
+          variant="hero"
+          size="lg"
+          className="mt-6"
+          onClick={handleStartLearning}
+        >
           Start Learning Today
         </Button>
+        {!user && (
+          <p className="mt-3 text-xs text-muted-foreground">
+            Login required to access your dashboard
+          </p>
+        )}
       </section>
 
       <Footer />

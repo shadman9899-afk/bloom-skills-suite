@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { GraduationCap, Mail, Lock, AlertCircle, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { GraduationCap, Mail, Lock, AlertCircle, ArrowRight, Eye, EyeOff, Home } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -55,10 +55,10 @@ const Login = () => {
             <p className="text-primary-foreground/70 text-lg leading-relaxed">
               Pick up where you left off. Your progress, courses, and achievements are waiting.
             </p>
-            {/* Floating stats */}
+            {/* Floating stats - Updated to 5K+ Students */}
             <div className="mt-10 flex gap-6">
               {[
-                { value: "10K+", label: "Students" },
+                { value: "5K+", label: "Students" }, // Changed from 10K+ to 5K+
                 { value: "50+", label: "Courses" },
                 { value: "95%", label: "Completion" },
               ].map((stat) => (
@@ -83,12 +83,38 @@ const Login = () => {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="w-full max-w-[400px]"
         >
-          {/* Mobile logo */}
-          <div className="flex items-center gap-2 mb-10 lg:hidden">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-primary">
-              <GraduationCap className="h-5 w-5 text-primary-foreground" />
+          {/* Mobile logo and Back to Home button */}
+          <div className="flex items-center justify-between gap-2 mb-10 lg:hidden">
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-primary">
+                <GraduationCap className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <span className="text-xl font-bold text-foreground tracking-tight">Slate Academy</span>
             </div>
-            <span className="text-xl font-bold text-foreground tracking-tight">Slate Academy</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/")}
+              className="gap-2"
+              aria-label="Back to Home"
+            >
+              <Home className="h-4 w-4" />
+              Home
+            </Button>
+          </div>
+
+          {/* Back to Home button for desktop */}
+          <div className="hidden lg:flex justify-end mb-6">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/")}
+              className="gap-2"
+              aria-label="Back to Home"
+            >
+              <Home className="h-4 w-4" />
+              Back to Home
+            </Button>
           </div>
 
           <div className="mb-8">
@@ -119,6 +145,7 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-11 h-12 rounded-xl border-border/60 bg-muted/30 focus:bg-background transition-colors"
+                  aria-label="Email address"
                 />
               </div>
             </div>
@@ -139,11 +166,13 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-11 pr-11 h-12 rounded-xl border-border/60 bg-muted/30 focus:bg-background transition-colors"
+                  aria-label="Password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-foreground transition-colors"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -156,6 +185,7 @@ const Login = () => {
               size="lg"
               className="w-full h-12 rounded-xl text-base font-semibold"
               disabled={loading}
+              aria-label="Login to your account"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
