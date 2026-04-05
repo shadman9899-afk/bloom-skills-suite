@@ -8,15 +8,14 @@ interface Profile {
   display_name: string | null;
   avatar_url: string | null;
   bio: string | null;
-  role: string;
-  email: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 interface AuthContextType {
   session: Session | null;
   user: User | null;
   profile: Profile | null;
-  isAdmin: boolean;
   loading: boolean;
   signOut: () => Promise<void>;
 }
@@ -25,7 +24,6 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   user: null,
   profile: null,
-  isAdmin: false,
   loading: true,
   signOut: async () => {},
 });
@@ -104,15 +102,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const isAdmin = profile?.role === "admin";
-
   return (
     <AuthContext.Provider
       value={{
         session,
         user: session?.user ?? null,
         profile,
-        isAdmin,
         loading,
         signOut,
       }}

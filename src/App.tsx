@@ -7,20 +7,20 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ScrollToTop from "@/components/ScrollToTop";
 
-// Lazy load pages for code splitting
-const Index = lazy(() => import("./pages/Index.tsx"));
-const Courses = lazy(() => import("./pages/Courses.tsx"));
-const CourseDetail = lazy(() => import("./pages/CourseDetail.tsx"));
-const Payment = lazy(() => import("./pages/Payment.tsx"));
-const Portfolio = lazy(() => import("./pages/Portfolio.tsx"));
-const Support = lazy(() => import("./pages/Support.tsx"));
-const AIChatbot = lazy(() => import("./pages/AIChatbot.tsx"));
-const Login = lazy(() => import("./pages/Login.tsx"));
-const Signup = lazy(() => import("./pages/Signup.tsx"));
-const Onboarding = lazy(() => import("./pages/Onboarding.tsx"));
-const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
-const NotFound = lazy(() => import("./pages/NotFound.tsx"));
-const AdminSupportTickets = lazy(() => import("./pages/AdminSupportTickets.tsx"));
+// Existing pages
+import Index from "./pages/Index.tsx";
+import Courses from "./pages/Courses.tsx";
+import CourseDetail from "./pages/CourseDetail.tsx";
+import Payment from "./pages/Payment.tsx";
+import Portfolio from "./pages/Portfolio.tsx";
+import Support from "./pages/Support.tsx";
+import AIChatbot from "./pages/AIChatbot.tsx";
+import Login from "./pages/Login.tsx";
+import Signup from "./pages/Signup.tsx";
+import Onboarding from "./pages/Onboarding.tsx";
+import Dashboard from "./pages/Dashboard.tsx";
+import NotFound from "./pages/NotFound.tsx";
+import AdminSupportTickets from "./pages/AdminSupportTickets.tsx";
 
 // Admin pages
 const AdminPanel = lazy(() => import("./pages/admin/AdminPanel.tsx"));
@@ -57,29 +57,73 @@ const App = () => (
       <HashRouter>
         <ScrollToTop />
         <AuthProvider>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/courses" element={<Courses />} />
-              <Route path="/courses/:id" element={<CourseDetail />} />
-              <Route path="/payment/:id" element={<Payment />} />
-              <Route path="/portfolio" element={<Portfolio />} />
-              <Route path="/support" element={<Support />} />
-              <Route path="/ai-chat" element={<AIChatbot />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/admin/support-tickets" element={<AdminSupportTickets />} />
-              <Route path="/admin" element={<AdminPanel />} />
-              <Route path="/admin/courses" element={<AdminCourses />} />
-              <Route path="/admin/lessons/:courseId" element={<AdminLessons />} />
-              <Route path="/admin/media" element={<AdminMedia />} />
-              <Route path="/admin/students" element={<AdminStudents />} />
-              <Route path="/admin/pages" element={<AdminPageBuilder />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
+          <Routes>
+            {/* ── Public Routes ── */}
+            <Route path="/" element={<Index />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/courses/:id" element={<CourseDetail />} />
+            <Route path="/payment/:id" element={<Payment />} />
+            <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/ai-chat" element={<AIChatbot />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/admin/support-tickets" element={<AdminSupportTickets />} />
+
+            {/* ── Admin Routes (protected) ── */}
+            <Route
+              path="/admin"
+              element={
+                <RequireAdmin>
+                  <AdminPanel />
+                </RequireAdmin>
+              }
+            />
+            <Route
+              path="/admin/courses"
+              element={
+                <RequireAdmin>
+                  <AdminCourses />
+                </RequireAdmin>
+              }
+            />
+            <Route
+              path="/admin/lessons/:courseId"
+              element={
+                <RequireAdmin>
+                  <AdminLessons />
+                </RequireAdmin>
+              }
+            />
+            <Route
+              path="/admin/media"
+              element={
+                <RequireAdmin>
+                  <AdminMedia />
+                </RequireAdmin>
+              }
+            />
+            <Route
+              path="/admin/students"
+              element={
+                <RequireAdmin>
+                  <AdminStudents />
+                </RequireAdmin>
+              }
+            />
+            <Route
+              path="/admin/pages"
+              element={
+                <RequireAdmin>
+                  <AdminPageBuilder />
+                </RequireAdmin>
+              }
+            />
+
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </AuthProvider>
       </HashRouter>
     </TooltipProvider>

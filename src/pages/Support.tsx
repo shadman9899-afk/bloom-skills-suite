@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Search, CreditCard, BookOpen, User, Wrench, ChevronDown, MessageCircle, Mail, Phone, CheckCircle, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
@@ -9,10 +10,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
 const helpCategories = [
-  { icon: CreditCard, title: "Payments", desc: "Billing, refunds & invoices" },
-  { icon: BookOpen, title: "Courses", desc: "Access, content & certificates" },
-  { icon: User, title: "Account", desc: "Profile, settings & login" },
-  { icon: Wrench, title: "Technical", desc: "Bugs, errors & compatibility" },
+  { icon: CreditCard, title: "Payments", desc: "Billing, refunds & invoices", path: "/support/payments" },
+  { icon: BookOpen, title: "Courses", desc: "Access, content & certificates", path: "/support/courses" },
+  { icon: User, title: "Account", desc: "Profile, settings & login", path: "/support/account" },
+  { icon: Wrench, title: "Technical", desc: "Bugs, errors & compatibility", path: "/support/technical" },
 ];
 
 const faqs = [
@@ -31,6 +32,7 @@ const Support = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmitTicket = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,10 +59,10 @@ const Support = () => {
 
       console.log("Submitting ticket with data:", ticketData);
 
-      const { data, error } = await supabase
-        .from("support_tickets")
-        .insert([ticketData])
-        .select();
+      const { data, error } = await (supabase
+        .from("support_tickets" as any)
+        .insert([ticketData] as any)
+        .select() as any);
 
       if (error) {
         console.error("Error submitting ticket:", error.message);
@@ -118,6 +120,7 @@ const Support = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
+                onClick={() => navigate(cat.path)}
                 className="group cursor-pointer rounded-xl border border-border bg-card p-6 shadow-card transition-all hover:shadow-card-hover hover:-translate-y-1"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent">

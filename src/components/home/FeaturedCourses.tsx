@@ -4,13 +4,20 @@ import { Clock, BarChart2 } from "lucide-react";
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import uiuxImg from "@/assets/courses/uiux-design.jpg";
+import fullstackImg from "@/assets/courses/fullstack-dev.jpg";
+import marketingImg from "@/assets/courses/digital-marketing.jpg";
+import dataImg from "@/assets/courses/data-analytics.jpg";
+import productImg from "@/assets/courses/product-design.jpg";
+import reactImg from "@/assets/courses/react-typescript.jpg";
+
 const courses = [
-  { id: "1", title: "UI/UX Design Fundamentals", duration: "8 weeks", level: "Beginner", category: "Design" },
-  { id: "2", title: "Full-Stack Web Development", duration: "12 weeks", level: "Intermediate", category: "Coding" },
-  { id: "3", title: "Digital Marketing Mastery", duration: "6 weeks", level: "Beginner", category: "Marketing" },
-  { id: "4", title: "Data Analytics with Python", duration: "10 weeks", level: "Intermediate", category: "Data" },
-  { id: "5", title: "Product Design Sprint", duration: "4 weeks", level: "Beginner", category: "Design" },
-  { id: "6", title: "React & TypeScript Pro", duration: "8 weeks", level: "Intermediate", category: "Coding" },
+  { id: "1", title: "UI/UX Design Fundamentals", duration: "8 weeks", level: "Beginner", category: "Design", image: uiuxImg },
+  { id: "2", title: "Full-Stack Web Development", duration: "12 weeks", level: "Intermediate", category: "Coding", image: fullstackImg },
+  { id: "3", title: "Digital Marketing Mastery", duration: "6 weeks", level: "Beginner", category: "Marketing", image: marketingImg },
+  { id: "4", title: "Data Analytics with Python", duration: "10 weeks", level: "Intermediate", category: "Data", image: dataImg },
+  { id: "5", title: "Product Design Sprint", duration: "4 weeks", level: "Beginner", category: "Design", image: productImg },
+  { id: "6", title: "React & TypeScript Pro", duration: "8 weeks", level: "Intermediate", category: "Coding", image: reactImg },
 ];
 
 const FeaturedCourses = () => {
@@ -48,10 +55,17 @@ const FeaturedCourses = () => {
           {courses.map((course) => (
             <div
               key={course.id}
-              className="min-w-[280px] max-w-[300px] shrink-0 rounded-xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1"
+              className="group min-w-[280px] max-w-[300px] shrink-0 rounded-xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1"
             >
-              <div className="h-40 rounded-t-xl bg-accent flex items-center justify-center">
-                <span className="text-sm font-medium text-accent-foreground">{course.category}</span>
+              <div className="h-40 rounded-t-xl overflow-hidden">
+                <img
+                  src={course.image}
+                  alt={course.title}
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                  width={960}
+                  height={640}
+                />
               </div>
               <div className="p-5">
                 <h3 className="font-semibold text-foreground">{course.title}</h3>

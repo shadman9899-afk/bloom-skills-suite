@@ -10,14 +10,12 @@ import { supabase } from "@/integrations/supabase/client";
 interface CourseDetailRow {
   id: string;
   title: string;
-  description: string;
-  duration: string;
-  level: string;
+  description: string | null;
+  duration: string | null;
+  level: string | null;
   category: string;
-  price: number;
   image_url: string | null;
-  is_published: boolean;
-  instructor_name: string | null;
+  total_modules: number;
 }
 
 // Mock course content data (in a real app, this would come from the database)
@@ -69,9 +67,8 @@ const CourseDetail = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from("courses")
-        .select("id, title, description, category, duration, level, price, image_url, is_published, instructor_name")
+        .select("id, title, description, category, duration, level, image_url, total_modules")
         .eq("id", id)
-        .eq("is_published", true)
         .single();
 
       if (error) {
@@ -192,17 +189,14 @@ const CourseDetail = () => {
                     <BarChart2 className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
                     <span className="text-sm md:text-base">{course.level}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <Users className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-                    <span className="text-sm md:text-base">Instructor: {course.instructor_name || "Expert Faculty"}</span>
+                  <div className="flex items-center space-x-2">
+                    <Users className="h-5 w-5 text-blue-600" />
+                    <span className="text-gray-600">Instructor: {course.instructor_name || "TBD"}</span>
                   </div>
                 </div>
-                <div className="text-left sm:text-right">
-                  <div className="text-2xl md:text-3xl font-bold text-blue-600 flex items-center gap-1">
-                    <IndianRupee className="h-5 w-5 md:h-6 md:w-6" />
-                    {priceInINR.toLocaleString('en-IN')}
-                  </div>
-                  <div className="text-xs md:text-sm text-slate-500">Including GST</div>
+                <div className="text-right">
+                  <div className="text-3xl font-bold text-blue-600">${course.price}</div>
+                  <div className="text-sm text-gray-500">One-time payment</div>
                 </div>
               </div>
 
@@ -363,16 +357,8 @@ const CourseDetail = () => {
                   <Users className="h-7 w-7 md:h-10 md:w-10 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg md:text-xl font-semibold text-slate-900">{course.instructor_name || "Expert Instructor"}</h3>
-                  <p className="text-sm md:text-base text-slate-600">Professional Developer & Educator</p>
-                  <div className="flex items-center gap-1 mt-1">
-                    <Star className="h-3 w-3 md:h-4 md:w-4 text-amber-500 fill-amber-500" />
-                    <Star className="h-3 w-3 md:h-4 md:w-4 text-amber-500 fill-amber-500" />
-                    <Star className="h-3 w-3 md:h-4 md:w-4 text-amber-500 fill-amber-500" />
-                    <Star className="h-3 w-3 md:h-4 md:w-4 text-amber-500 fill-amber-500" />
-                    <Star className="h-3 w-3 md:h-4 md:w-4 text-amber-500 fill-amber-500" />
-                    <span className="text-xs md:text-sm text-slate-500 ml-1">(2,345 reviews)</span>
-                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900">{course.instructor_name || "Expert Instructor"}</h3>
+                  <p className="text-gray-600">Professional Developer & Educator</p>
                 </div>
               </div>
               <p className="text-slate-700 text-sm md:text-base leading-relaxed">
@@ -390,14 +376,12 @@ const CourseDetail = () => {
             transition={{ duration: 0.5, delay: 0.5 }}
             className="mt-8 md:mt-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 md:p-10 text-center text-white"
           >
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-3 md:mb-4">Ready to Start Your Learning Journey?</h2>
-            <p className="text-base md:text-lg opacity-90 mb-6 md:mb-8 max-w-2xl mx-auto">
-              Join thousands of students who have transformed their careers with our courses.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-slate-100 text-sm md:text-base">
-                <Play className="h-4 w-4 md:h-5 md:w-5 mr-2" />
-                Enroll Now - ₹{priceInINR.toLocaleString('en-IN')}
+            <h2 className="text-2xl font-bold mb-4">Ready to Start Your Learning Journey?</h2>
+            <p className="text-lg opacity-90 mb-6">Join thousands of students who have transformed their careers with our courses.</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+                <Play className="h-5 w-5 mr-2" />
+                Enroll Now - ${course.price}
               </Button>
               <Button size="lg" variant="outline" className="bg-white text-blue-600 hover:bg-slate-100 text-sm md:text-base">
                 <MessageCircle className="h-4 w-4 md:h-5 md:w-5 mr-2" />
