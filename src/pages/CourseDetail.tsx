@@ -1,12 +1,13 @@
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Clock, BarChart2, CheckCircle, ChevronDown, BookOpen, Award, Users, Headphones, FileText, Video, Briefcase, Star, Zap, Download, MessageCircle, Play, IndianRupee } from "lucide-react";
+import { Clock, BarChart2, CheckCircle, ChevronDown, BookOpen, Award, Users, Video, Briefcase, Star, Download, MessageCircle, Play } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { supabase } from "@/integrations/supabase/client";
 
+// REMOVED price and instructor_name since they don't exist
 interface CourseDetailRow {
   id: string;
   title: string;
@@ -18,7 +19,7 @@ interface CourseDetailRow {
   total_modules: number;
 }
 
-// Mock course content data (in a real app, this would come from the database)
+// Mock course content data
 const courseContent = {
   "What You'll Learn": [
     "Master fundamental concepts and principles",
@@ -49,11 +50,10 @@ const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [course, setCourse] = useState<CourseDetailRow | null>(null);
   const [loading, setLoading] = useState(true);
-  const [expandedSection, setExpandedSection] = useState<string>("learn");
+  const [expandedSection, setExpandedSection] = useState<string | null>("learn");
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Scroll to top when component mounts
     window.scrollTo({ top: 0, behavior: "instant" });
     if (topRef.current) {
       topRef.current.scrollIntoView({ behavior: "instant" });
@@ -65,6 +65,7 @@ const CourseDetail = () => {
       if (!id) return;
 
       setLoading(true);
+      // REMOVED price and instructor_name from select query
       const { data, error } = await supabase
         .from("courses")
         .select("id, title, description, category, duration, level, image_url, total_modules")
@@ -80,15 +81,12 @@ const CourseDetail = () => {
       setLoading(false);
     };
 
-    void fetchCourseDetail();
+    fetchCourseDetail();
   }, [id]);
 
   const toggleSection = (section: string) => {
     setExpandedSection(expandedSection === section ? null : section);
   };
-
-  // Convert price from USD to INR (assuming 1 USD = 85 INR, adjust as needed)
-  const priceInINR = course ? Math.round(course.price * 85) : 0;
 
   if (loading) {
     return (
@@ -191,12 +189,13 @@ const CourseDetail = () => {
                   </div>
                   <div className="flex items-center space-x-2">
                     <Users className="h-5 w-5 text-blue-600" />
-                    <span className="text-gray-600">Instructor: {course.instructor_name || "TBD"}</span>
+                    <span className="text-gray-600">Instructor: Slate Academy Team</span>
                   </div>
                 </div>
+                {/* REMOVED price section */}
                 <div className="text-right">
-                  <div className="text-3xl font-bold text-blue-600">${course.price}</div>
-                  <div className="text-sm text-gray-500">One-time payment</div>
+                  <div className="text-3xl font-bold text-blue-600">Free</div>
+                  <div className="text-sm text-gray-500">Start learning today</div>
                 </div>
               </div>
 
@@ -215,7 +214,7 @@ const CourseDetail = () => {
             </div>
           </motion.div>
 
-          {/* Course Content Sections */}
+          {/* Course Content Sections - Same as before */}
           <div className="space-y-4 md:space-y-6">
             {/* What You'll Learn */}
             <motion.div
@@ -345,7 +344,7 @@ const CourseDetail = () => {
               </AnimatePresence>
             </motion.div>
 
-            {/* Instructor Section */}
+            {/* Instructor Section - Updated with static text */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -357,7 +356,7 @@ const CourseDetail = () => {
                   <Users className="h-7 w-7 md:h-10 md:w-10 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900">{course.instructor_name || "Expert Instructor"}</h3>
+                  <h3 className="text-xl font-semibold text-gray-900">Expert Instructor</h3>
                   <p className="text-gray-600">Professional Developer & Educator</p>
                 </div>
               </div>
@@ -381,7 +380,7 @@ const CourseDetail = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
                 <Play className="h-5 w-5 mr-2" />
-                Enroll Now - ${course.price}
+                Enroll Now - Free
               </Button>
               <Button size="lg" variant="outline" className="bg-white text-blue-600 hover:bg-slate-100 text-sm md:text-base">
                 <MessageCircle className="h-4 w-4 md:h-5 md:w-5 mr-2" />

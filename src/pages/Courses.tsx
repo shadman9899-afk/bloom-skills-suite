@@ -69,7 +69,7 @@ const categoryCards = [
   },
 ];
 
-// Optimized Course Card Component - No lazy loading
+// Optimized Course Card Component
 const CourseCard = memo(({ course, index }: { course: CourseRow; index: number }) => {
   return (
     <motion.div
@@ -187,27 +187,38 @@ const Courses = () => {
   const [level, setLevel] = useState("All");
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    const fetchCourseData = async () => {
-      setLoading(true);
+  // FIXED: Added cacheKey definition
+  const cacheKey = 'courses_cache';
+
+  // FIXED: Memoized fetch function
+  const fetchCourseData = useCallback(async () => {
+    setLoading(true);
+    try {
       const { data, error } = await supabase
         .from("courses")
         .select("id, title, description, category, duration, level, price, image_url, is_published")
         .eq("is_published", true)
         .order("created_at", { ascending: false });
 
-    if (error) {
-      console.error("Failed to fetch courses", error);
+      if (error) {
+        console.error("Failed to fetch courses", error);
+        setCourses([]);
+      } else {
+        const courseData = (data as CourseRow[]) || [];
+        setCourses(courseData);
+        // FIXED: cacheKey is now defined
+        sessionStorage.setItem(cacheKey, JSON.stringify(courseData));
+        sessionStorage.setItem(`${cacheKey}_time`, Date.now().toString());
+      }
+    } catch (err) {
+      console.error("Error fetching courses:", err);
       setCourses([]);
-    } else {
-      const courseData = (data as CourseRow[]) || [];
-      setCourses(courseData);
-      sessionStorage.setItem(cacheKey, JSON.stringify(courseData));
-      sessionStorage.setItem(`${cacheKey}_time`, Date.now().toString());
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  }, []);
+  }, [cacheKey]); // Added dependency
 
+  // FIXED: Added fetchCourseData as dependency
   useEffect(() => {
     fetchCourseData();
   }, [fetchCourseData]);
@@ -246,9 +257,11 @@ const Courses = () => {
 
   const handleClearFilter = useCallback(() => {
     handleCategoryChange("All");
+    setLevel("All");
+    setSearch("");
   }, [handleCategoryChange]);
 
-  // Loading skeleton with reduced animations
+  // Loading skeleton
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -332,67 +345,41 @@ const Courses = () => {
               </button>
             ))}
           </div>
+          
+          {/* FIXED: Added clear all filters button */}
+          {(category !== "All" || level !== "All" || search) && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClearFilter}
+              className="h-10 px-3 text-sm"
+            >
+              Clear All Filters
+            </Button>
+          )}
         </div>
       </div>
 
-      {/* Course Grid */}
+      {/* Course Grid - FIXED: Using CourseCard component consistently */}
       <div className="container py-12">
         {category !== "All" && (
           <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
             <span>Showing</span>
             <span className="font-semibold text-foreground">{category}</span>
             <span>courses</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleClearFilter}
-              className="h-6 px-2 text-xs"
-            >
-              Clear filter
-            </Button>
           </div>
-        ) : (
-          <>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {filtered.map((course, i) => (
-                <motion.div
-                  key={course.id}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="group rounded-xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1"
-                >
-                  <div className="h-40 rounded-t-xl overflow-hidden">
-                    <img
-                      src={course.image_url || "https://via.placeholder.com/400x240?text=No+Image"}
-                      alt={course.title}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="p-5">
-                    <div className="flex gap-2">
-                      <span className="rounded-md bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground">{course.level}</span>
-                    </div>
-                    <h3 className="mt-3 font-semibold text-foreground">{course.title}</h3>
-                    <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{course.description}</p>
-                    <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{course.duration}</span>
-                      <span className="flex items-center gap-1"><BarChart2 className="h-3.5 w-3.5" />{course.level}</span>
-                    </div>
-                    <Button variant="link" className="mt-3 px-0" asChild>
-                      <Link to={`/courses/${course.id}`}>View Course →</Link>
-                    </Button>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-            {filtered.length === 0 && (
-              <div className="py-20 text-center text-muted-foreground">
-                {courses.length === 0 ? "No courses available. Check back later!" : "No courses found. Try different filters."}
-              </div>
-            )}
-          </>
+        )}
+        
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filtered.map((course, i) => (
+            <CourseCard key={course.id} course={course} index={i} />
+          ))}
+        </div>
+        
+        {filtered.length === 0 && (
+          <div className="py-20 text-center text-muted-foreground">
+            {courses.length === 0 ? "No courses available. Check back later!" : "No courses found. Try different filters."}
+          </div>
         )}
       </div>
       <Footer />

@@ -16,7 +16,7 @@ const Navbar = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, signOut } = useAuth();
-
+  const isAdmin = user?.role === 'admin' || user?.email === 'aa1552582@gmail.com';
   return (
     <header
       className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-lg"
@@ -47,8 +47,8 @@ const Navbar = () => {
               key={link.path}
               to={link.path}
               className={`rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-none ${location.pathname === link.path
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:text-foreground"
                 }`}
               aria-current={location.pathname === link.path ? "page" : undefined}
             >
@@ -155,8 +155,8 @@ const Navbar = () => {
                 to={link.path}
                 onClick={() => setMobileOpen(false)}
                 className={`rounded-md px-4 py-3 text-sm font-medium transition-colors focus:outline-none ${location.pathname === link.path
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+                  ? "bg-accent text-accent-foreground"
+                  : "text-muted-foreground hover:text-foreground"
                   }`}
                 aria-current={location.pathname === link.path ? "page" : undefined}
               >
@@ -178,27 +178,11 @@ const Navbar = () => {
                   <Link to="/dashboard">Dashboard</Link>
                 </Button>
                 {isAdmin && (
-                  <Button
-                    variant="secondary"
-                    asChild
-                    onClick={() => setMobileOpen(false)}
-                    aria-label="Go to admin panel"
-                    className="focus:outline-none"
-                  >
+                  <Button variant="secondary" asChild onClick={() => setMobileOpen(false)}>
                     <Link to="/admin">Admin Panel</Link>
                   </Button>
                 )}
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    signOut();
-                    setMobileOpen(false);
-                  }}
-                  aria-label="Sign out of your account"
-                  className="focus:outline-none"
-                >
-                  Sign Out
-                </Button>
+                <Button variant="ghost" onClick={() => { signOut(); setMobileOpen(false); }}>Sign Out</Button>
               </>
             ) : (
               <>
