@@ -5,110 +5,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Slate Academy — Build Real Skills</title>
-  <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 
-  <!-- Critical CSS inlined for above-the-fold content -->
-  <style>
-    /* Critical styles - only what's needed for above the fold */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box
-    }
-
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: #ffffff;
-    }
-
-    .container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 1rem
-    }
-
-    .bg-background {
-      background-color: #fff
-    }
-
-    .min-h-screen {
-      min-height: 100vh
-    }
-
-    /* Loading skeleton styles */
-    .loading-skeleton {
-      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-      background-size: 200% 100%;
-      animation: loading 1.5s infinite;
-    }
-
-    @keyframes loading {
-      0% {
-        background-position: 200% 0;
-      }
-
-      100% {
-        background-position: -200% 0;
-      }
-    }
-  </style>
-
-  <meta name="description"
-    content="Build real skills with real-world projects. Join thousands of learners at Slate Academy." />
-  <meta name="author" content="Slate Academy" />
-
-  <!-- Font optimization with display swap -->
+  <!-- Preconnect to external services (improves FCP) -->
+  <link rel="preconnect" href="https://wijvgzkzdqqtzgbmqlsw.supabase.co" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preload" as="style"
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+
+  <!-- Preload critical fonts (improves FCP) -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    as="style" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
     media="print" onload="this.media='all'" />
+
   <noscript>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
   </noscript>
 
-  <!-- Preconnect to Supabase and other services -->
-  <link rel="preconnect" href="https://wijvgzkzdqqtzgbmqlsw.supabase.co" crossorigin />
-  <link rel="dns-prefetch" href="https://wijvgzkzdqqtzgbmqlsw.supabase.co" />
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
-
-  <!-- Meta tags -->
-  <meta property="og:title" content="Slate Academy" />
-  <meta property="og:description" content="Build real skills with real-world projects at Slate Academy." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://slateacademy.com" />
-  <meta property="og:image" content="https://slateacademy.com/og-image.png" />
-
-  <!-- Theme color for better mobile experience -->
-  <meta name="theme-color" content="#ffffff" />
-
-  <!-- Enable early rendering hints -->
-  <meta http-equiv="Accept-CH" content="Viewport-Width, Width" />
+  <meta name="description"
+    content="Build real skills with real-world projects. Join thousands of learners at Slate Academy." />
+  <meta name="author" content="Slate Academy" />
 </head>
 
 <body>
-  <!-- Add a simple loading indicator that appears immediately -->
-  <div id="root">
-    <div
-      style="display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: system-ui;">
-      <div style="text-align: center;">
-        <div
-          style="width: 48px; height: 48px; border: 3px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;">
-        </div>
-        <p style="margin-top: 16px; color: #64748b;">Loading...</p>
-      </div>
-    </div>
-  </div>
-
-  <style>
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-  </style>
-
+  <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

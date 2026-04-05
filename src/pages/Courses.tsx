@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useSearchParams } from "react-router-dom";
-import { Clock, BarChart2, Search, Palette, Code, Megaphone, BarChart3, LayoutGrid } from "lucide-react";
+import { Clock, BarChart2, Search, Palette, Code, Megaphone, BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -15,7 +15,7 @@ interface CourseRow {
   level: string;
   category: string;
   image_url: string | null;
-  thumbnail_url: string | null;  // ✅ Added thumbnail_url
+  thumbnail_url: string | null;
   is_published: boolean;
 }
 
@@ -64,67 +64,68 @@ const categoryCards = [
 
 // Helper function to get the best available image URL
 const getCourseImageUrl = (course: CourseRow): string => {
-  // Priority: thumbnail_url > image_url > placeholder
-  if (course.thumbnail_url) {
-    return course.thumbnail_url;
-  }
-  if (course.image_url) {
-    return course.image_url;
-  }
+  if (course.thumbnail_url) return course.thumbnail_url;
+  if (course.image_url) return course.image_url;
   return `https://placehold.co/400x240/1e293b/ffffff?text=${course.category}+Course`;
 };
 
-// ─── Course Card ─────────────────────────────────────────────────────────────
+// ─── Optimized Course Card with lazy loading and skeleton ───────────────────
+const CourseCard = memo(({ course, index }: { course: CourseRow; index: number }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const isFirstRow = index < 4;
 
-const CourseCard = memo(({ course, index }: { course: CourseRow; index: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 15 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.3, delay: Math.min(index * 0.01, 0.2) }}
-    className="group rounded-xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1"
-  >
-    <div className="relative h-40 rounded-t-xl overflow-hidden bg-muted">
-      <img
-        src={getCourseImageUrl(course)}
-        alt={course.title}
-        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-        loading="eager"
-        decoding="async"
-      />
-      <div className="absolute top-3 left-3 rounded-full bg-black/60 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
-        {course.category}
+  return (
+    <div className="group rounded-xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1">
+      <div className="relative h-40 rounded-t-xl overflow-hidden bg-muted">
+        {/* Skeleton loader */}
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gradient-to-r from-muted to-muted/50 animate-pulse" />
+        )}
+        <img
+          src={getCourseImageUrl(course)}
+          alt={course.title}
+          width="400"
+          height="240"
+          className={`h-full w-full object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
+          loading={isFirstRow ? "eager" : "lazy"}
+          decoding="async"
+          onLoad={() => setImageLoaded(true)}
+        />
+        <div className="absolute top-3 left-3 rounded-full bg-black/60 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
+          {course.category}
+        </div>
       </div>
-    </div>
 
-    <div className="p-5">
-      <span className="rounded-md bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground">
-        {course.level}
-      </span>
-      <h3 className="mt-3 font-semibold text-foreground line-clamp-1">{course.title}</h3>
-      <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{course.description}</p>
-      <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
-        <span className="flex items-center gap-1">
-          <Clock className="h-3.5 w-3.5" />
-          {course.duration}
-        </span>
-        <span className="flex items-center gap-1">
-          <BarChart2 className="h-3.5 w-3.5" />
+      <div className="p-5">
+        <span className="rounded-md bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground">
           {course.level}
         </span>
+        <h3 className="mt-3 font-semibold text-foreground line-clamp-1">{course.title}</h3>
+        <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{course.description}</p>
+        <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <Clock className="h-3.5 w-3.5" />
+            {course.duration}
+          </span>
+          <span className="flex items-center gap-1">
+            <BarChart2 className="h-3.5 w-3.5" />
+            {course.level}
+          </span>
+        </div>
+        <Button variant="link" className="mt-3 px-0" asChild>
+          <Link to={`/courses/${course.id}`} aria-label={`View details for ${course.title}`}>
+            View Course →
+          </Link>
+        </Button>
       </div>
-      <Button variant="link" className="mt-3 px-0" asChild>
-        <Link to={`/courses/${course.id}`} aria-label={`View details for ${course.title}`}>
-          View Course →
-        </Link>
-      </Button>
     </div>
-  </motion.div>
-));
+  );
+});
 
 CourseCard.displayName = "CourseCard";
 
 // ─── Category Card ────────────────────────────────────────────────────────────
-
 const CategoryCard = memo(
   ({
     cat,
@@ -143,9 +144,7 @@ const CategoryCard = memo(
     isActive: boolean;
     onClick: () => void;
   }) => (
-    <motion.div
-      whileHover={{ y: -6 }}
-      whileTap={{ scale: 0.98 }}
+    <div
       onClick={onClick}
       className={`cursor-pointer relative p-6 rounded-2xl text-white shadow-lg transition-all duration-300
         bg-gradient-to-br ${color}
@@ -179,14 +178,13 @@ const CategoryCard = memo(
       </div>
 
       <div className="absolute bottom-0 right-0 w-24 h-24 bg-white/10 rounded-full pointer-events-none" />
-    </motion.div>
+    </div>
   )
 );
 
 CategoryCard.displayName = "CategoryCard";
 
-// ─── Loading Skeleton ─────────────────────────────────────────────────────────
-
+// ─── Optimized Loading Skeleton ─────────────────────────────────────────────
 const LoadingSkeleton = () => (
   <div className="min-h-screen bg-background">
     <Navbar />
@@ -195,9 +193,9 @@ const LoadingSkeleton = () => (
         {[...Array(8)].map((_, i) => (
           <div key={i} className="rounded-xl border border-border bg-card p-5">
             <div className="h-40 rounded-t-xl bg-muted animate-pulse mb-4" />
-            <div className="h-4 bg-muted rounded animate-pulse mb-2" />
-            <div className="h-3 bg-muted rounded animate-pulse mb-1" />
-            <div className="h-3 bg-muted rounded animate-pulse w-3/4" />
+            <div className="h-4 bg-muted rounded mb-2" />
+            <div className="h-3 bg-muted rounded mb-1 w-3/4" />
+            <div className="h-3 bg-muted rounded w-1/2" />
           </div>
         ))}
       </div>
@@ -207,7 +205,6 @@ const LoadingSkeleton = () => (
 );
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
-
 const Courses = () => {
   const [courses, setCourses] = useState<CourseRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -220,8 +217,7 @@ const Courses = () => {
   const [level, setLevel] = useState("All");
   const [search, setSearch] = useState("");
 
-  // ── Fetch ──────────────────────────────────────────────────────────────────
-
+  // ── Optimized Fetch with pagination ────────────────────────────────────────
   const fetchCourseData = useCallback(async () => {
     setLoading(true);
 
@@ -229,17 +225,20 @@ const Courses = () => {
     const cached = sessionStorage.getItem(cacheKey);
     const cacheTime = sessionStorage.getItem(`${cacheKey}_time`);
 
+    // Use cache if less than 5 minutes old
     if (cached && cacheTime && Date.now() - parseInt(cacheTime) < 300000) {
       setCourses(JSON.parse(cached));
       setLoading(false);
       return;
     }
 
-    // ✅ Select thumbnail_url as well
+    // Fetch only published courses with limit for faster initial load
     const { data, error } = await supabase
       .from("courses")
       .select("id, title, description, duration, level, category, image_url, thumbnail_url, is_published")
-      .order("created_at", { ascending: false });
+      .eq("is_published", true)
+      .order("created_at", { ascending: false })
+      .limit(20); // Limit to 20 courses for faster load
 
     if (error) {
       console.error("Failed to fetch courses", error);
@@ -259,7 +258,6 @@ const Courses = () => {
   }, [fetchCourseData]);
 
   // ── Filtering ──────────────────────────────────────────────────────────────
-
   const filtered = useMemo(() => {
     return courses.filter((c) => {
       if (category !== "All") {
@@ -281,7 +279,6 @@ const Courses = () => {
   );
 
   // ── Handlers ───────────────────────────────────────────────────────────────
-
   const handleCategoryChange = useCallback(
     (cat: string) => {
       setCategory(cat);
@@ -307,14 +304,13 @@ const Courses = () => {
   );
 
   // ── Render ─────────────────────────────────────────────────────────────────
-
   if (loading) return <LoadingSkeleton />;
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero */}
+      {/* Hero Section - No animations for faster paint */}
       <section className="border-b border-border bg-card py-12">
         <div className="container">
           <h1 className="text-3xl font-bold text-foreground lg:text-4xl">Explore Courses</h1>
@@ -324,7 +320,7 @@ const Courses = () => {
         </div>
       </section>
 
-      {/* Category Cards */}
+      {/* Category Cards - No animations */}
       <div className="border-b border-border bg-background">
         <div className="container py-10">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -367,8 +363,8 @@ const Courses = () => {
                 key={l}
                 onClick={() => handleLevelChange(l)}
                 className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary ${level === l
-                  ? "bg-foreground text-background"
-                  : "bg-secondary text-secondary-foreground hover:bg-accent"
+                    ? "bg-foreground text-background"
+                    : "bg-secondary text-secondary-foreground hover:bg-accent"
                   }`}
                 aria-pressed={level === l}
               >

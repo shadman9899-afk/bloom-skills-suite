@@ -2,8 +2,34 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import heroImage from "@/assets/hero-learning-dashboard.png";
+import { useHomePageImage } from "@/hooks/useHomePageImage";
 
 const HeroSection = () => {
+  const { image, loading } = useHomePageImage();
+
+  // Use custom image if available, otherwise use default
+  const heroImageUrl = image?.url || heroImage;
+  const heroAltText = image?.alt || "Student learning dashboard showing progress tracking and course analytics";
+
+  if (loading) {
+    return (
+      <section className="gradient-hero overflow-hidden">
+        <div className="container py-20 lg:py-28">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            <div>
+              <div className="h-12 bg-muted animate-pulse rounded w-3/4 mb-4" />
+              <div className="h-4 bg-muted animate-pulse rounded w-full mb-2" />
+              <div className="h-4 bg-muted animate-pulse rounded w-5/6" />
+            </div>
+            <div className="hidden lg:block">
+              <div className="w-full h-96 bg-muted animate-pulse rounded-2xl" />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="gradient-hero overflow-hidden">
       <div className="container py-20 lg:py-28">
@@ -39,8 +65,8 @@ const HeroSection = () => {
             className="hidden lg:block"
           >
             <img
-              src={heroImage}
-              alt="Student learning dashboard showing progress tracking and course analytics"
+              src={heroImageUrl}
+              alt={heroAltText}
               className="w-full rounded-2xl shadow-elevated"
             />
           </motion.div>

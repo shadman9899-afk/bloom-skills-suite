@@ -21,6 +21,7 @@ import Onboarding from "./pages/Onboarding.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import AdminSupportTickets from "./pages/AdminSupportTickets.tsx";
+import AdminHomePage from "./components/admin/AdminHomePage.tsx";
 
 // Admin pages (lazy loaded)
 const AdminPanel = lazy(() => import("./pages/admin/AdminPanel.tsx"));
@@ -111,6 +112,14 @@ const App = () => (
                 element={
                   <RequireAdmin>
                     <AdminStudents />
+                  </RequireAdmin>
+                }
+              />
+              <Route
+                path="/admin/homepage"
+                element={
+                  <RequireAdmin>
+                    <AdminHomePage />
                   </RequireAdmin>
                 }
               />

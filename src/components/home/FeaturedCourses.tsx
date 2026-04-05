@@ -74,7 +74,7 @@ const FeaturedCourses = () => {
                   <span className="flex items-center gap-1"><BarChart2 className="h-3.5 w-3.5" />{course.level}</span>
                 </div>
                 <Button variant="link" className="mt-3 px-0" asChild>
-                  <Link to={`/courses/${course.id}`}>View Course →</Link>
+                  <Link to={`/courses`}>View Course →</Link>
                 </Button>
               </div>
             </div>
