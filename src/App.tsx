@@ -1,50 +1,30 @@
 import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Route, Routes } from "react-router-dom";
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ScrollToTop from "@/components/ScrollToTop";
 
-// Existing pages
+// Import only critical pages
 import Index from "./pages/Index.tsx";
 import Courses from "./pages/Courses.tsx";
-import CourseDetail from "./pages/CourseDetail.tsx";
-import Payment from "./pages/Payment.tsx";
-import Portfolio from "./pages/Portfolio.tsx";
-import Support from "./pages/Support.tsx";
-import AIChatbot from "./pages/AIChatbot.tsx";
 import Login from "./pages/Login.tsx";
 import Signup from "./pages/Signup.tsx";
-import Onboarding from "./pages/Onboarding.tsx";
-import Dashboard from "./pages/Dashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
-import AdminSupportTickets from "./pages/AdminSupportTickets.tsx";
-import AdminHomePage from "./components/admin/AdminHomePage.tsx";
 
-// Admin pages (lazy loaded)
-const AdminPanel = lazy(() => import("./pages/admin/AdminPanel.tsx"));
-const AdminCourses = lazy(() => import("./pages/admin/AdminCourses.tsx"));
-const AdminLessons = lazy(() => import("./pages/admin/AdminLessons.tsx"));
-const AdminMedia = lazy(() => import("./pages/admin/AdminMedia.tsx"));
-const AdminStudents = lazy(() => import("./pages/admin/AdminStudents.tsx"));
-const AdminPageBuilder = lazy(() => import("./pages/admin/AdminPageBuilder.tsx"));
-const RequireAdmin = lazy(() => import("./components/admin/RequireAdmin.tsx"));
+// Lazy load everything else
+const CourseDetail = lazy(() => import("./pages/CourseDetail.tsx"));
+const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
 
-// Loading component
-const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-  </div>
-);
+// Simple loader
+const Loader = () => <div className="min-h-screen flex items-center justify-center">
+  <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+</div>;
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 10, // 10 minutes
-      retry: 1,
+      staleTime: 1000 * 60 * 10,
       refetchOnWindowFocus: false,
     },
   },
@@ -52,94 +32,24 @@ const queryClient = new QueryClient({
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+    <HashRouter>
+      <ScrollToTop />
       <Toaster />
-      <Sonner />
-      <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <ScrollToTop />
-        <AuthProvider>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Index />} />
-              <Route path="/courses" element={<Courses />} />
-              <Route path="/courses/:id" element={<CourseDetail />} />
-              <Route path="/payment/:id" element={<Payment />} />
-              <Route path="/portfolio" element={<Portfolio />} />
-              <Route path="/support" element={<Support />} />
-              <Route path="/ai-chat" element={<AIChatbot />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/admin/support-tickets" element={<AdminSupportTickets />} />
-
-              {/* Admin Routes (protected) */}
-              <Route
-                path="/admin"
-                element={
-                  <RequireAdmin>
-                    <AdminPanel />
-                  </RequireAdmin>
-                }
-              />
-              <Route
-                path="/admin/courses"
-                element={
-                  <RequireAdmin>
-                    <AdminCourses />
-                  </RequireAdmin>
-                }
-              />
-              <Route
-                path="/admin/lessons/:courseId"
-                element={
-                  <RequireAdmin>
-                    <AdminLessons />
-                  </RequireAdmin>
-                }
-              />
-              <Route
-                path="/admin/media"
-                element={
-                  <RequireAdmin>
-                    <AdminMedia />
-                  </RequireAdmin>
-                }
-              />
-              <Route
-                path="/admin/students"
-                element={
-                  <RequireAdmin>
-                    <AdminStudents />
-                  </RequireAdmin>
-                }
-              />
-              <Route
-                path="/admin/homepage"
-                element={
-                  <RequireAdmin>
-                    <AdminHomePage />
-                  </RequireAdmin>
-                }
-              />
-              <Route
-                path="/admin/pages"
-                element={
-                  <RequireAdmin>
-                    <AdminPageBuilder />
-                  </RequireAdmin>
-                }
-              />
-
-              {/* 404 Route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </AuthProvider>
-      </HashRouter>
-    </TooltipProvider>
+      <AuthProvider>
+        <Suspense fallback={<Loader />}>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/courses/:id" element={<CourseDetail />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </AuthProvider>
+    </HashRouter>
   </QueryClientProvider>
 );
 
-export default App; 
+export default App;

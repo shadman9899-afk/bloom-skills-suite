@@ -1,28 +1,40 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import heroImage from "@/assets/hero-learning-dashboard.png";
 import { useHomePageImage } from "@/hooks/useHomePageImage";
+import { useState, useEffect } from "react";
 
 const HeroSection = () => {
   const { image, loading } = useHomePageImage();
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [shouldShowAnimation, setShouldShowAnimation] = useState(false);
 
   // Use custom image if available, otherwise use default
   const heroImageUrl = image?.url || heroImage;
   const heroAltText = image?.alt || "Student learning dashboard showing progress tracking and course analytics";
 
+  // Delay animations until after paint
+  useEffect(() => {
+    // Use requestAnimationFrame for smoother animations
+    const timer = requestAnimationFrame(() => {
+      setShouldShowAnimation(true);
+    });
+    return () => cancelAnimationFrame(timer);
+  }, []);
+
+  // Simplified loading state (no pulse animation)
   if (loading) {
     return (
       <section className="gradient-hero overflow-hidden">
         <div className="container py-20 lg:py-28">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <div>
-              <div className="h-12 bg-muted animate-pulse rounded w-3/4 mb-4" />
-              <div className="h-4 bg-muted animate-pulse rounded w-full mb-2" />
-              <div className="h-4 bg-muted animate-pulse rounded w-5/6" />
+              <div className="h-12 bg-gray-200 rounded w-3/4 mb-4" />
+              <div className="h-4 bg-gray-200 rounded w-full mb-2" />
+              <div className="h-4 bg-gray-200 rounded w-5/6" />
             </div>
             <div className="hidden lg:block">
-              <div className="w-full h-96 bg-muted animate-pulse rounded-2xl" />
+              <div className="w-full h-96 bg-gray-200 rounded-2xl" />
             </div>
           </div>
         </div>
@@ -32,44 +44,50 @@ const HeroSection = () => {
 
   return (
     <section className="gradient-hero overflow-hidden">
-      <div className="container py-20 lg:py-28">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+      <div className="container py-16 lg:py-24">
+        <div className="grid items-center gap-8 lg:gap-12 lg:grid-cols-2">
+          {/* Text Content - No animations for faster paint */}
+          <div>
+            <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-foreground sm:text-4xl lg:text-5xl xl:text-6xl">
               Your Learning Journey,{" "}
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Visualised & Tracked.
               </span>
             </h1>
-            <p className="mt-6 max-w-lg text-lg leading-relaxed text-muted-foreground">
+            <p className="mt-4 max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg">
               Track your progress, master new skills, and see real results — all from a personalised dashboard designed for your growth.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <Button variant="hero" size="xl" asChild>
+            <div className="mt-6 flex flex-wrap gap-3 sm:gap-4">
+              <Button variant="hero" size="default" asChild className="text-sm sm:text-base">
                 <Link to="/courses">Start Learning</Link>
               </Button>
-              <Button variant="orange" size="xl" asChild>
+              <Button variant="orange" size="default" asChild className="text-sm sm:text-base">
                 <Link to="/login">Sign In</Link>
               </Button>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="hidden lg:block"
-          >
-            <img
-              src={heroImageUrl}
-              alt={heroAltText}
-              className="w-full rounded-2xl shadow-elevated"
-            />
-          </motion.div>
+          {/* Image - Lazy loaded with blur-up effect */}
+          <div className="hidden lg:block">
+            <div className="relative w-full rounded-2xl overflow-hidden bg-gray-100">
+              {/* Low quality image placeholder (blur-up) */}
+              {!imageLoaded && (
+                <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse" />
+              )}
+              <img
+                src={heroImageUrl}
+                alt={heroAltText}
+                width={600}
+                height={450}
+                className={`w-full rounded-2xl shadow-elevated transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"
+                  }`}
+                loading="eager"
+                decoding="async"
+                onLoad={() => setImageLoaded(true)}
+                fetchPriority="high"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>
