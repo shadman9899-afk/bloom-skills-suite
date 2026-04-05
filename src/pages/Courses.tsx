@@ -1,40 +1,33 @@
 import { useState, useEffect, useMemo, useCallback, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useSearchParams } from "react-router-dom";
-import { Clock, BarChart2, Search, Palette, Code, Megaphone, BarChart3 } from "lucide-react";
+import { Clock, BarChart2, Search, Palette, Code, Megaphone, BarChart3, LayoutGrid } from "lucide-react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { supabase } from "@/integrations/supabase/client";
 
-import uiuxImg from "@/assets/courses/uiux-design.jpg";
-import fullstackImg from "@/assets/courses/fullstack-dev.jpg";
-import marketingImg from "@/assets/courses/digital-marketing.jpg";
-import dataImg from "@/assets/courses/data-analytics.jpg";
-import productImg from "@/assets/courses/product-design.jpg";
-import reactImg from "@/assets/courses/react-typescript.jpg";
-
-const categoryImageMap: Record<string, string> = {
-  Design: uiuxImg,
-  Coding: fullstackImg,
-  Marketing: marketingImg,
-  Data: dataImg,
-};
-
 interface CourseRow {
   id: string;
   title: string;
-  description: string | null;
-  duration: string | null;
-  level: string | null;
+  description: string;
+  duration: string;
+  level: string;
   category: string;
   image_url: string | null;
-  total_modules: number;
+  thumbnail_url: string | null;  // ✅ Added thumbnail_url
+  is_published: boolean;
 }
 
-const levels = ["All", "Beginner", "Intermediate"];
+const levels = ["All", "Beginner", "Intermediate", "Advanced"];
 
-// Category cards data
+const categoryMap: Record<string, string[]> = {
+  Design: ["Design"],
+  Coding: ["Coding", "Development"],
+  Marketing: ["Marketing", "Digital Marketing"],
+  Data: ["Data"],
+};
+
 const categoryCards = [
   {
     title: "Design",
@@ -69,233 +62,269 @@ const categoryCards = [
   },
 ];
 
-// Optimized Course Card Component
-const CourseCard = memo(({ course, index }: { course: CourseRow; index: number }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: Math.min(index * 0.01, 0.2) }}
-      className="group rounded-xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1"
-    >
-      <div className="relative h-40 rounded-t-xl overflow-hidden bg-muted">
-        <img
-          src={course.image_url || `https://placehold.co/400x240/1e293b/ffffff?text=${course.category}+Course`}
-          alt={course.title}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          loading="eager"
-          decoding="async"
-          fetchPriority={index < 4 ? "high" : "low"}
-        />
-        <div className="absolute top-3 left-3 rounded-full bg-black/60 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
-          {course.category}
-        </div>
-      </div>
-      <div className="p-5">
-        <div className="flex gap-2">
-          <span className="rounded-md bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground">
-            {course.level}
-          </span>
-        </div>
-        <h3 className="mt-3 font-semibold text-foreground line-clamp-1">{course.title}</h3>
-        <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{course.description}</p>
-        <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <Clock className="h-3.5 w-3.5" />
-            {course.duration}
-          </span>
-          <span className="flex items-center gap-1">
-            <BarChart2 className="h-3.5 w-3.5" />
-            {course.level}
-          </span>
-        </div>
-        <Button variant="link" className="mt-3 px-0" asChild>
-          <Link to={`/courses/${course.id}`} aria-label={`View details for ${course.title}`}>
-            View Course →
-          </Link>
-        </Button>
-      </div>
-    </motion.div>
-  );
-});
+// Helper function to get the best available image URL
+const getCourseImageUrl = (course: CourseRow): string => {
+  // Priority: thumbnail_url > image_url > placeholder
+  if (course.thumbnail_url) {
+    return course.thumbnail_url;
+  }
+  if (course.image_url) {
+    return course.image_url;
+  }
+  return `https://placehold.co/400x240/1e293b/ffffff?text=${course.category}+Course`;
+};
 
-CourseCard.displayName = 'CourseCard';
+// ─── Course Card ─────────────────────────────────────────────────────────────
 
-// Optimized Category Card Component
-const CategoryCard = memo(({
-  cat,
-  Icon,
-  color,
-  items,
-  count,
-  isActive,
-  onClick
-}: {
-  cat: string;
-  Icon: any;
-  color: string;
-  items: string[];
-  count: number;
-  isActive: boolean;
-  onClick: () => void;
-}) => (
+const CourseCard = memo(({ course, index }: { course: CourseRow; index: number }) => (
   <motion.div
-    whileHover={{ y: -6 }}
-    whileTap={{ scale: 0.98 }}
-    onClick={onClick}
-    className={`cursor-pointer relative p-6 rounded-2xl text-white shadow-lg transition-all duration-300 
-      bg-gradient-to-br ${color}
-      ${isActive ? "ring-2 ring-white/70 scale-[1.03]" : "opacity-90 hover:opacity-100"}
-      h-72 flex flex-col justify-between`}
-    role="button"
-    tabIndex={0}
-    onKeyDown={(e) => e.key === 'Enter' && onClick()}
-    aria-label={`Filter by ${cat} category, ${count} courses available`}
-    aria-pressed={isActive}
+    initial={{ opacity: 0, y: 15 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.3, delay: Math.min(index * 0.01, 0.2) }}
+    className="group rounded-xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1"
   >
-    <div>
-      <div className="mb-4">
-        <Icon size={28} />
+    <div className="relative h-40 rounded-t-xl overflow-hidden bg-muted">
+      <img
+        src={getCourseImageUrl(course)}
+        alt={course.title}
+        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+        loading="eager"
+        decoding="async"
+      />
+      <div className="absolute top-3 left-3 rounded-full bg-black/60 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
+        {course.category}
       </div>
-      <h2 className="text-2xl font-bold">{cat}</h2>
-      <p className="text-sm opacity-80 mt-1">{count} Courses</p>
     </div>
 
-    <div className="flex flex-wrap gap-2">
-      {items.slice(0, 5).map((item, i) => (
-        <span
-          key={i}
-          className="bg-white/20 text-xs px-3 py-1 rounded-full backdrop-blur"
-        >
-          {item}
+    <div className="p-5">
+      <span className="rounded-md bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground">
+        {course.level}
+      </span>
+      <h3 className="mt-3 font-semibold text-foreground line-clamp-1">{course.title}</h3>
+      <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{course.description}</p>
+      <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
+        <span className="flex items-center gap-1">
+          <Clock className="h-3.5 w-3.5" />
+          {course.duration}
         </span>
-      ))}
+        <span className="flex items-center gap-1">
+          <BarChart2 className="h-3.5 w-3.5" />
+          {course.level}
+        </span>
+      </div>
+      <Button variant="link" className="mt-3 px-0" asChild>
+        <Link to={`/courses/${course.id}`} aria-label={`View details for ${course.title}`}>
+          View Course →
+        </Link>
+      </Button>
     </div>
-
-    <div className="absolute bottom-0 right-0 w-24 h-24 bg-white/10 rounded-full pointer-events-none" />
   </motion.div>
 ));
 
-CategoryCard.displayName = 'CategoryCard';
+CourseCard.displayName = "CourseCard";
+
+// ─── Category Card ────────────────────────────────────────────────────────────
+
+const CategoryCard = memo(
+  ({
+    cat,
+    Icon,
+    color,
+    items,
+    count,
+    isActive,
+    onClick,
+  }: {
+    cat: string;
+    Icon: any;
+    color: string;
+    items: string[];
+    count: number;
+    isActive: boolean;
+    onClick: () => void;
+  }) => (
+    <motion.div
+      whileHover={{ y: -6 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={onClick}
+      className={`cursor-pointer relative p-6 rounded-2xl text-white shadow-lg transition-all duration-300
+        bg-gradient-to-br ${color}
+        ${isActive ? "ring-2 ring-white/70 scale-[1.03]" : "opacity-90 hover:opacity-100"}
+        h-72 flex flex-col justify-between`}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && onClick()}
+      aria-label={`Filter by ${cat} category, ${count} courses available`}
+      aria-pressed={isActive}
+    >
+      <div>
+        <div className="mb-4">
+          <Icon size={28} />
+        </div>
+        <h2 className="text-2xl font-bold">{cat}</h2>
+        <p className="text-sm opacity-80 mt-1">
+          {count} {count === 1 ? "Course" : "Courses"}
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {items.slice(0, 5).map((item, i) => (
+          <span
+            key={i}
+            className="bg-white/20 text-xs px-3 py-1 rounded-full backdrop-blur"
+          >
+            {item}
+          </span>
+        ))}
+      </div>
+
+      <div className="absolute bottom-0 right-0 w-24 h-24 bg-white/10 rounded-full pointer-events-none" />
+    </motion.div>
+  )
+);
+
+CategoryCard.displayName = "CategoryCard";
+
+// ─── Loading Skeleton ─────────────────────────────────────────────────────────
+
+const LoadingSkeleton = () => (
+  <div className="min-h-screen bg-background">
+    <Navbar />
+    <div className="container py-12">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {[...Array(8)].map((_, i) => (
+          <div key={i} className="rounded-xl border border-border bg-card p-5">
+            <div className="h-40 rounded-t-xl bg-muted animate-pulse mb-4" />
+            <div className="h-4 bg-muted rounded animate-pulse mb-2" />
+            <div className="h-3 bg-muted rounded animate-pulse mb-1" />
+            <div className="h-3 bg-muted rounded animate-pulse w-3/4" />
+          </div>
+        ))}
+      </div>
+    </div>
+    <Footer />
+  </div>
+);
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
 
 const Courses = () => {
   const [courses, setCourses] = useState<CourseRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
+
   const initialCat = searchParams.get("category") || "All";
-  const [category, setCategory] = useState(initialCat.charAt(0).toUpperCase() + initialCat.slice(1));
+  const [category, setCategory] = useState(
+    initialCat.charAt(0).toUpperCase() + initialCat.slice(1)
+  );
   const [level, setLevel] = useState("All");
   const [search, setSearch] = useState("");
 
-  // FIXED: Added cacheKey definition
-  const cacheKey = 'courses_cache';
+  // ── Fetch ──────────────────────────────────────────────────────────────────
 
-  // FIXED: Memoized fetch function
   const fetchCourseData = useCallback(async () => {
     setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from("courses")
-        .select("id, title, description, category, duration, level, price, image_url, is_published")
-        .eq("is_published", true)
-        .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("Failed to fetch courses", error);
-        setCourses([]);
-      } else {
-        const courseData = (data as CourseRow[]) || [];
-        setCourses(courseData);
-        // FIXED: cacheKey is now defined
-        sessionStorage.setItem(cacheKey, JSON.stringify(courseData));
-        sessionStorage.setItem(`${cacheKey}_time`, Date.now().toString());
-      }
-    } catch (err) {
-      console.error("Error fetching courses:", err);
-      setCourses([]);
-    } finally {
+    const cacheKey = "courses_all";
+    const cached = sessionStorage.getItem(cacheKey);
+    const cacheTime = sessionStorage.getItem(`${cacheKey}_time`);
+
+    if (cached && cacheTime && Date.now() - parseInt(cacheTime) < 300000) {
+      setCourses(JSON.parse(cached));
       setLoading(false);
+      return;
     }
-  }, [cacheKey]); // Added dependency
 
-  // FIXED: Added fetchCourseData as dependency
+    // ✅ Select thumbnail_url as well
+    const { data, error } = await supabase
+      .from("courses")
+      .select("id, title, description, duration, level, category, image_url, thumbnail_url, is_published")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Failed to fetch courses", error);
+      setCourses([]);
+    } else {
+      const courseData = (data as CourseRow[]) || [];
+      setCourses(courseData);
+      sessionStorage.setItem(cacheKey, JSON.stringify(courseData));
+      sessionStorage.setItem(`${cacheKey}_time`, Date.now().toString());
+    }
+
+    setLoading(false);
+  }, []);
+
   useEffect(() => {
     fetchCourseData();
   }, [fetchCourseData]);
 
-  // Memoized filtered courses
+  // ── Filtering ──────────────────────────────────────────────────────────────
+
   const filtered = useMemo(() => {
     return courses.filter((c) => {
-      if (category !== "All" && c.category !== category) return false;
+      if (category !== "All") {
+        const aliases = categoryMap[category] || [category];
+        if (!aliases.includes(c.category)) return false;
+      }
       if (level !== "All" && c.level !== level) return false;
       if (search && !c.title.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
     });
   }, [courses, category, level, search]);
 
-  // Memoized category counts
-  const getCategoryCount = useCallback((catName: string) => {
-    return courses.filter(c => c.category === catName).length;
-  }, [courses]);
+  const getCategoryCount = useCallback(
+    (catName: string) => {
+      const aliases = categoryMap[catName] || [catName];
+      return courses.filter((c) => aliases.includes(c.category)).length;
+    },
+    [courses]
+  );
 
-  const handleCategoryChange = useCallback((cat: string) => {
-    setCategory(cat);
-    if (cat === "All") {
-      setSearchParams({});
-    } else {
-      setSearchParams({ category: cat.toLowerCase() });
-    }
-  }, [setSearchParams]);
+  // ── Handlers ───────────────────────────────────────────────────────────────
 
-  const handleLevelChange = useCallback((l: string) => {
-    setLevel(l);
-  }, []);
+  const handleCategoryChange = useCallback(
+    (cat: string) => {
+      setCategory(cat);
+      if (cat === "All") {
+        setSearchParams({});
+      } else {
+        setSearchParams({ category: cat.toLowerCase() });
+      }
+    },
+    [setSearchParams]
+  );
 
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-  }, []);
+  const handleLevelChange = useCallback((l: string) => setLevel(l), []);
 
-  const handleClearFilter = useCallback(() => {
-    handleCategoryChange("All");
-    setLevel("All");
-    setSearch("");
-  }, [handleCategoryChange]);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value),
+    []
+  );
 
-  // Loading skeleton
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container py-12">
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="rounded-xl border border-border bg-card p-5">
-                <div className="h-40 rounded-t-xl bg-muted animate-pulse mb-4" />
-                <div className="h-4 bg-muted rounded animate-pulse mb-2" />
-                <div className="h-3 bg-muted rounded animate-pulse mb-1" />
-                <div className="h-3 bg-muted rounded animate-pulse w-3/4" />
-              </div>
-            ))}
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  const handleClearFilter = useCallback(
+    () => handleCategoryChange("All"),
+    [handleCategoryChange]
+  );
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+
+  if (loading) return <LoadingSkeleton />;
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero Section */}
+      {/* Hero */}
       <section className="border-b border-border bg-card py-12">
         <div className="container">
           <h1 className="text-3xl font-bold text-foreground lg:text-4xl">Explore Courses</h1>
-          <p className="mt-2 text-muted-foreground">Find the perfect course to start or advance your career</p>
+          <p className="mt-2 text-muted-foreground">
+            Find the perfect course to start or advance your career
+          </p>
         </div>
       </section>
 
-      {/* Category Cards Grid */}
+      {/* Category Cards */}
       <div className="border-b border-border bg-background">
         <div className="container py-10">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -318,6 +347,7 @@ const Courses = () => {
       {/* Filters Bar */}
       <div className="sticky top-16 z-40 border-b border-border bg-background/90 backdrop-blur-md">
         <div className="container flex flex-wrap items-center gap-4 py-4">
+          {/* Search */}
           <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
@@ -330,6 +360,7 @@ const Courses = () => {
             />
           </div>
 
+          {/* Level Filter */}
           <div className="flex gap-2" role="group" aria-label="Course level filters">
             {levels.map((l) => (
               <button
@@ -345,43 +376,42 @@ const Courses = () => {
               </button>
             ))}
           </div>
-          
-          {/* FIXED: Added clear all filters button */}
-          {(category !== "All" || level !== "All" || search) && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleClearFilter}
-              className="h-10 px-3 text-sm"
-            >
-              Clear All Filters
-            </Button>
-          )}
         </div>
       </div>
 
-      {/* Course Grid - FIXED: Using CourseCard component consistently */}
+      {/* Course Grid */}
       <div className="container py-12">
         {category !== "All" && (
           <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
             <span>Showing</span>
             <span className="font-semibold text-foreground">{category}</span>
             <span>courses</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClearFilter}
+              className="h-6 px-2 text-xs"
+            >
+              Clear filter
+            </Button>
           </div>
         )}
-        
+
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((course, i) => (
             <CourseCard key={course.id} course={course} index={i} />
           ))}
         </div>
-        
+
         {filtered.length === 0 && (
           <div className="py-20 text-center text-muted-foreground">
-            {courses.length === 0 ? "No courses available. Check back later!" : "No courses found. Try different filters."}
+            {courses.length === 0
+              ? "No courses available. Check back later!"
+              : "No courses found. Try different filters."}
           </div>
         )}
       </div>
+
       <Footer />
     </div>
   );

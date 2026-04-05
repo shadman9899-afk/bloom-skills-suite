@@ -67,7 +67,7 @@ const emptyForm = {
   is_free: false,
 };
 
-// ── Format seconds to hh:mm:ss ────────────────────────────────
+// Format seconds to hh:mm:ss
 const formatDuration = (seconds: number): string => {
   if (!seconds) return "0:00";
   const h = Math.floor(seconds / 3600);
@@ -77,7 +77,7 @@ const formatDuration = (seconds: number): string => {
   return `${m}:${String(s).padStart(2, "0")}`;
 };
 
-// ── Sortable Lesson Row ────────────────────────────────────────
+// Sortable Lesson Row Component
 const SortableLessonRow = ({
   lesson,
   index,
@@ -104,7 +104,6 @@ const SortableLessonRow = ({
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 10 : "auto",
   };
 
   return (
@@ -116,7 +115,6 @@ const SortableLessonRow = ({
           : "border-gray-100 shadow-sm hover:shadow-md"
         }`}
     >
-      {/* Drag Handle */}
       <button
         {...attributes}
         {...listeners}
@@ -125,12 +123,10 @@ const SortableLessonRow = ({
         <GripVertical className="w-5 h-5" />
       </button>
 
-      {/* Index */}
       <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 flex-shrink-0">
         {index + 1}
       </div>
 
-      {/* Video Thumbnail */}
       <div className="w-16 h-12 rounded-lg overflow-hidden bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center flex-shrink-0">
         {lesson.video_url ? (
           <video
@@ -143,7 +139,6 @@ const SortableLessonRow = ({
         )}
       </div>
 
-      {/* Info */}
       <div className="flex-1 min-w-0">
         <p className="font-medium text-gray-900 text-sm truncate">
           {lesson.title}
@@ -169,7 +164,6 @@ const SortableLessonRow = ({
         </div>
       </div>
 
-      {/* Free/Paid Badge */}
       <button
         onClick={() => onToggleFree(lesson)}
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors flex-shrink-0 ${lesson.is_free
@@ -188,7 +182,6 @@ const SortableLessonRow = ({
         )}
       </button>
 
-      {/* Actions */}
       <div className="flex items-center gap-1 flex-shrink-0">
         <button
           onClick={() => onEdit(lesson)}
@@ -207,7 +200,7 @@ const SortableLessonRow = ({
   );
 };
 
-// ── Main Component ─────────────────────────────────────────────
+// Main Component
 const AdminLessons = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
@@ -231,34 +224,42 @@ const AdminLessons = () => {
     })
   );
 
-  // ── Fetch ────────────────────────────────────────────────────
+  // Fetch data
   const fetchData = async () => {
     if (!courseId) return;
     setLoading(true);
 
-    const [courseRes, lessonsRes] = await Promise.all([
-      supabase
-        .from("courses")
-        .select("id, title, category")
-        .eq("id", courseId)
-        .single(),
-      supabase
-        .from("lessons")
-        .select("*")
-        .eq("course_id", courseId)
-        .order("order_index", { ascending: true }),
-    ]);
+    try {
+      const [courseRes, lessonsRes] = await Promise.all([
+        supabase
+          .from("courses")
+          .select("id, title, category")
+          .eq("id", courseId)
+          .single(),
+        supabase
+          .from("lessons")
+          .select("*")
+          .eq("course_id", courseId)
+          .order("order_index", { ascending: true }),
+      ]);
 
-    if (courseRes.data) setCourse(courseRes.data);
-    if (lessonsRes.data) setLessons(lessonsRes.data);
-    setLoading(false);
+      if (courseRes.error) throw courseRes.error;
+      if (courseRes.data) setCourse(courseRes.data);
+
+      if (lessonsRes.error) throw lessonsRes.error;
+      if (lessonsRes.data) setLessons(lessonsRes.data as Lesson[]);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchData();
   }, [courseId]);
 
-  // ── Open Modal ───────────────────────────────────────────────
+  // Open modal
   const openCreate = () => {
     setEditingLesson(null);
     setForm({
@@ -290,13 +291,29 @@ const AdminLessons = () => {
     setUploadProgress(0);
   };
 
-  // ── Cloudinary Video Upload ──────────────────────────────────
+  // Cloudinary Video Upload
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!CLOUD_NAME || !UPLOAD_PRESET) {
-      alert("Cloudinary is not configured. Add VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET to your .env file.");
+      alert(
+        "Cloudinary is not configured. Please check your environment variables.\n\n" +
+        "VITE_CLOUDINARY_CLOUD_NAME: " + (CLOUD_NAME || "missing") + "\n" +
+        "VITE_CLOUDINARY_UPLOAD_PRESET: " + (UPLOAD_PRESET || "missing")
+      );
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('video/')) {
+      alert("Please upload a valid video file (MP4, MOV, AVI, etc.)");
+      return;
+    }
+
+    // Validate file size (max 500MB)
+    if (file.size > 500 * 1024 * 1024) {
+      alert("Video size must be less than 500MB");
       return;
     }
 
@@ -311,7 +328,7 @@ const AdminLessons = () => {
       formData.append("resource_type", "video");
 
       // Use XMLHttpRequest for progress tracking
-      await new Promise<void>((resolve, reject) => {
+      const result = await new Promise<{ secure_url: string; public_id: string; duration: number }>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
 
         xhr.upload.addEventListener("progress", (event) => {
@@ -325,32 +342,16 @@ const AdminLessons = () => {
           if (xhr.status === 200) {
             const data = JSON.parse(xhr.responseText);
             if (data.secure_url) {
-              setForm((prev) => ({
-                ...prev,
-                video_url: data.secure_url,
-                cloudinary_public_id: data.public_id,
+              resolve({
+                secure_url: data.secure_url,
+                public_id: data.public_id,
                 duration: Math.round(data.duration || 0),
-              }));
-
-              // Save to media_library
-              supabase.auth.getUser().then(({ data: { user } }) => {
-                supabase.from("media_library").insert({
-                  name: file.name,
-                  url: data.secure_url,
-                  public_id: data.public_id,
-                  type: "video",
-                  size: file.size,
-                  format: file.type,
-                  uploaded_by: user?.id,
-                });
               });
-
-              resolve();
             } else {
-              reject(new Error("Upload failed"));
+              reject(new Error("Upload failed: No URL returned"));
             }
           } else {
-            reject(new Error("Upload failed with status: " + xhr.status));
+            reject(new Error(`Upload failed with status: ${xhr.status}`));
           }
         });
 
@@ -358,10 +359,30 @@ const AdminLessons = () => {
 
         xhr.open(
           "POST",
-          `[api.cloudinary.com](https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload)`
+          `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`
         );
         xhr.send(formData);
       });
+
+      setForm((prev) => ({
+        ...prev,
+        video_url: result.secure_url,
+        cloudinary_public_id: result.public_id,
+        duration: result.duration,
+      }));
+
+      // Save to media_library
+      const { data: { user } } = await supabase.auth.getUser();
+      await supabase.from("media_library").insert({
+        name: file.name,
+        url: result.secure_url,
+        public_id: result.public_id,
+        type: "video",
+        size: file.size,
+        format: file.type,
+        uploaded_by: user?.id,
+      });
+
     } catch (err: any) {
       console.error("Video upload error:", err);
       alert("Upload failed: " + err.message);
@@ -370,7 +391,7 @@ const AdminLessons = () => {
     }
   };
 
-  // ── Save Lesson ──────────────────────────────────────────────
+  // Save Lesson
   const handleSave = async () => {
     if (!form.title.trim()) {
       alert("Lesson title is required.");
@@ -412,34 +433,39 @@ const AdminLessons = () => {
     }
   };
 
-  // ── Delete Lesson ────────────────────────────────────────────
+  // Delete Lesson
   const handleDelete = async (id: string) => {
-    const { error } = await supabase.from("lessons").delete().eq("id", id);
-    if (error) {
-      alert("Delete failed: " + error.message);
-    } else {
+    try {
+      const { error } = await supabase.from("lessons").delete().eq("id", id);
+      if (error) throw error;
       setLessons((prev) => prev.filter((l) => l.id !== id));
+    } catch (err: any) {
+      alert("Delete failed: " + err.message);
     }
     setDeleteConfirm(null);
   };
 
-  // ── Toggle Free ──────────────────────────────────────────────
+  // Toggle Free
   const handleToggleFree = async (lesson: Lesson) => {
-    const { error } = await supabase
-      .from("lessons")
-      .update({ is_free: !lesson.is_free })
-      .eq("id", lesson.id);
+    try {
+      const { error } = await supabase
+        .from("lessons")
+        .update({ is_free: !lesson.is_free })
+        .eq("id", lesson.id);
 
-    if (!error) {
-      setLessons((prev) =>
-        prev.map((l) =>
-          l.id === lesson.id ? { ...l, is_free: !l.is_free } : l
-        )
-      );
+      if (!error) {
+        setLessons((prev) =>
+          prev.map((l) =>
+            l.id === lesson.id ? { ...l, is_free: !l.is_free } : l
+          )
+        );
+      }
+    } catch (err) {
+      console.error("Error toggling free status:", err);
     }
   };
 
-  // ── Drag End (reorder) ───────────────────────────────────────
+  // Drag End (reorder)
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -448,10 +474,8 @@ const AdminLessons = () => {
     const newIndex = lessons.findIndex((l) => l.id === over.id);
     const reordered = arrayMove(lessons, oldIndex, newIndex);
 
-    // Optimistic update
     setLessons(reordered);
 
-    // Save new order to Supabase
     setSavingOrder(true);
     try {
       const updates = reordered.map((lesson, index) =>
@@ -463,7 +487,6 @@ const AdminLessons = () => {
       await Promise.all(updates);
     } catch (err) {
       console.error("Reorder save error:", err);
-      // Revert on error
       await fetchData();
     } finally {
       setSavingOrder(false);
@@ -472,7 +495,7 @@ const AdminLessons = () => {
 
   const totalDuration = lessons.reduce((sum, l) => sum + (l.duration || 0), 0);
 
-  // ── Loading ──────────────────────────────────────────────────
+  // Loading state
   if (loading) {
     return (
       <div className="flex min-h-screen bg-gray-100">
@@ -594,11 +617,10 @@ const AdminLessons = () => {
         )}
       </main>
 
-      {/* ── Create / Edit Modal ── */}
+      {/* Create / Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
               <h2 className="text-lg font-bold text-gray-900">
                 {editingLesson ? "Edit Lesson" : "Add New Lesson"}
@@ -611,7 +633,6 @@ const AdminLessons = () => {
               </button>
             </div>
 
-            {/* Body */}
             <div className="p-6 space-y-5">
               {/* Title */}
               <div>
@@ -653,7 +674,6 @@ const AdminLessons = () => {
 
                 {form.video_url ? (
                   <div className="space-y-3">
-                    {/* Video Preview */}
                     <div className="relative rounded-xl overflow-hidden bg-black aspect-video">
                       <video
                         src={form.video_url}
@@ -691,7 +711,6 @@ const AdminLessons = () => {
                         <p className="text-sm text-blue-600 font-medium">
                           Uploading... {uploadProgress}%
                         </p>
-                        {/* Progress Bar */}
                         <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
                           <div
                             className="bg-blue-500 h-1.5 rounded-full transition-all"
@@ -806,7 +825,6 @@ const AdminLessons = () => {
               </div>
             </div>
 
-            {/* Footer */}
             <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-100">
               <button
                 onClick={closeModal}
@@ -827,7 +845,7 @@ const AdminLessons = () => {
         </div>
       )}
 
-      {/* ── Delete Confirm ── */}
+      {/* Delete Confirm */}
       {deleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm">

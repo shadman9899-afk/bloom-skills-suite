@@ -25,7 +25,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   profile: null,
   loading: true,
-  signOut: async () => {},
+  signOut: async () => { },
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -59,38 +59,48 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     console.log("🔐 Initializing Supabase auth...");
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log("🔐 Auth state changed:", event);
-        setSession(session);
+    let isMounted = true;
 
-        if (session?.user) {
-          // Defer profile fetch slightly to avoid Supabase auth deadlock
-          setTimeout(() => fetchProfile(session.user.id), 0);
-        } else {
-          setProfile(null);
-        }
-
-        setLoading(false);
-      }
-    );
-
-    // Get initial session
+    // Get initial session FIRST
     supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (!isMounted) return;
+
       if (error) {
         console.error("❌ Error getting session:", error);
       }
+
+      console.log("🔐 Initial session:", session);
       setSession(session);
+
       if (session?.user) {
         fetchProfile(session.user.id);
       }
+
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
-  }, []);
+    // Then listen to changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log("🔐 Auth state changed:", event);
 
+        if (!isMounted) return;
+
+        setSession(session);
+
+        if (session?.user) {
+          fetchProfile(session.user.id);
+        } else {
+          setProfile(null);
+        }
+      }
+    );
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
   const signOut = async () => {
     console.log("🚪 Signing out user...");
     try {
@@ -101,17 +111,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("❌ Error signing out:", error);
     }
   };
-
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    );
+  }
   return (
-    <AuthContext.Provider
-      value={{
-        session,
-        user: session?.user ?? null,
-        profile,
-        loading,
-        signOut,
-      }}
-    >
+    <AuthContext.Provider value={{ session, user: session?.user || null, profile, loading, signOut }}>
       {children}
     </AuthContext.Provider>
   );
