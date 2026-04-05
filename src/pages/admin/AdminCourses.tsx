@@ -393,8 +393,15 @@ const AdminCourses = () => {
                       onChange={handleImageChange}
                       className="block w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     />
-                    {form.image_url && (
-                      <img src={form.image_url} alt="course" className="mt-2 h-32 w-full object-cover rounded-md" />
+                    {form.image_url && form.image_url.startsWith("http") && (
+                      <img
+                        src={form.image_url}
+                        alt="course"
+                        className="mt-2 h-32 w-full object-cover rounded-md"
+                        onError={(e) => {
+                          e.currentTarget.src = "/fallback.png"; // add a default image
+                        }}
+                      />
                     )}
                     {uploading && <p className="text-xs text-muted-foreground">Uploading image...</p>}
                   </div>
