@@ -11,6 +11,9 @@ import Courses from "./pages/Courses.tsx";
 import Login from "./pages/Login.tsx";
 import Signup from "./pages/Signup.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import Portfolio from "./pages/Portfolio.tsx";
+import Support from "./pages/Support.tsx";
+import AIChatbot from "./pages/AIChatbot.tsx";
 
 // Lazy load everything else
 const CourseDetail = lazy(() => import("./pages/CourseDetail.tsx"));
@@ -44,6 +47,9 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/ai-chat" element={<AIChatbot />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
