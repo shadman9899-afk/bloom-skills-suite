@@ -79,7 +79,7 @@ const AdminPanel = () => {
           aria-hidden="true"
         />
       )}
-      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <AdminSidebar />
 
       <main className="flex-1 lg:ml-64 p-4 sm:p-6">
         <div className="mb-4 lg:hidden">
