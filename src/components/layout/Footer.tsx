@@ -61,7 +61,7 @@ const Footer = () => {
             © 2026 Slate Academy. All rights reserved.
           </p>
           <div className="flex gap-6">
-            <a href="#" className="text-sm text-muted-foreground hover:text-foreground">Privacy</a>
+            <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground">Privacy</Link>
             <a href="#" className="text-sm text-muted-foreground hover:text-foreground">Terms</a>
           </div>
         </div>

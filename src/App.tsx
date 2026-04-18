@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound.tsx";
 import Portfolio from "./pages/Portfolio.tsx";
 import Support from "./pages/Support.tsx";
 import AIChatbot from "./pages/AIChatbot.tsx";
+import Privacy from "./pages/Privacy.tsx";
 
 // Lazy load everything else
 const CourseDetail = lazy(() => import("./pages/CourseDetail.tsx"));
@@ -50,6 +51,7 @@ const App = () => (
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/support" element={<Support />} />
             <Route path="/ai-chat" element={<AIChatbot />} />
+            <Route path="/privacy" element={<Privacy />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
