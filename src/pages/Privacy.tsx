@@ -81,13 +81,17 @@ const Privacy = () => {
                   </p>
                   <nav className="flex flex-col gap-1.5 text-sm">
                     {sections.map((s) => (
-                      <a
+                      <button
                         key={s.id}
-                        href={`#${s.id}`}
-                        className="text-muted-foreground hover:text-primary transition-colors py-1"
+                        type="button"
+                        onClick={() => {
+                          const el = document.getElementById(s.id);
+                          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }}
+                        className="text-left text-muted-foreground hover:text-primary transition-colors py-1"
                       >
                         {s.label}
-                      </a>
+                      </button>
                     ))}
                   </nav>
                 </Card>
