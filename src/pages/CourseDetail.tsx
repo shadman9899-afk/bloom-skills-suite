@@ -209,9 +209,11 @@ const CourseDetail = () => {
               <p className="text-slate-700 text-base md:text-lg leading-relaxed mb-6">{course.description}</p>
 
               <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
-                <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-sm md:text-base py-2 md:py-2.5">
-                  <Play className="h-4 w-4 mr-2" />
-                  Start Learning
+                <Button asChild className="flex-1 bg-blue-600 hover:bg-blue-700 text-sm md:text-base py-2 md:py-2.5">
+                  <Link to={`/checkout/${id}`}>
+                    <Play className="h-4 w-4 mr-2" />
+                    Enroll Now · ₹{priceInINR.toLocaleString('en-IN')}
+                  </Link>
                 </Button>
                 <Button variant="outline" className="flex-1 text-sm md:text-base py-2 md:py-2.5">
                   <Download className="h-4 w-4 mr-2" />
