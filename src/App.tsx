@@ -19,6 +19,7 @@ import Privacy from "./pages/Privacy.tsx";
 // Lazy load everything else
 const CourseDetail = lazy(() => import("./pages/CourseDetail.tsx"));
 const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
+const Checkout = lazy(() => import("./pages/Checkout.tsx"));
 
 // Simple loader
 const Loader = () => <div className="min-h-screen flex items-center justify-center">
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/:id" element={<CourseDetail />} />
+            <Route path="/checkout/:id" element={<Checkout />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard" element={<Dashboard />} />
