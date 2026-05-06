@@ -168,7 +168,7 @@ const Checkout = () => {
                 <p className="text-xs text-slate-500 mt-1 line-clamp-1">{course.subtitle}</p>
                 <div className="flex flex-wrap gap-2 mt-2.5">
                   <span className="inline-flex items-center gap-1 text-[11px] font-medium bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full"><Clock className="w-3 h-3" /> {course.duration}</span>
-                  <span className="inline-flex items-center gap-1 text-[11px] font-medium bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full"><Infinity className="w-3 h-3" /> Lifetime</span>
+                  <span className="inline-flex items-center gap-1 text-[11px] font-medium bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full"><InfinityIcon className="w-3 h-3" /> Lifetime</span>
                   <span className="inline-flex items-center gap-1 text-[11px] font-medium bg-green-50 text-green-700 px-2 py-0.5 rounded-full"><Award className="w-3 h-3" /> Certificate</span>
                 </div>
               </div>
