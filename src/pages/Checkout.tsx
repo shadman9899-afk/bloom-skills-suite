@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ShieldCheck, Lock, BadgeCheck, FileText, MessageCircle,
   Smartphone, CreditCard, Wallet, Building2, Globe2, Tag,
-  ChevronLeft, CheckCircle2, Sparkles, Clock, Award, Infinity,
+  ChevronLeft, CheckCircle2, Sparkles, Clock, Award, Infinity as InfinityIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
