@@ -57,6 +57,9 @@ const App = () => (
             <Route path="/support" element={<Support />} />
             <Route path="/ai-chat" element={<AIChatbot />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/mentors" element={<Mentors />} />
+            <Route path="/placements" element={<Placements />} />
+            <Route path="/knowledge-hub" element={<KnowledgeHub />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
