@@ -153,7 +153,7 @@ const Courses = () => {
             Explore Slate Academy Courses
           </h1>
           <p className="mt-3 text-muted-foreground lg:text-lg">
-            Premium courses in Design, Coding, Marketing, and Data — built to make you job-ready.
+            Premium courses in Design, 3D Design, Marketing, and Data — built to make you job-ready.
           </p>
         </div>
       </section>

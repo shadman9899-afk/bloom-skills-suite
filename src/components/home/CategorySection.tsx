@@ -1,11 +1,11 @@
-import { Palette, Code, Megaphone, BarChart3 } from "lucide-react";
+import { Palette, Box, Megaphone, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const categories = [
   { icon: Palette, title: "Design", desc: "UI/UX, Graphic Design & Product Thinking", color: "text-pink-500", bg: "bg-pink-50" },
-  { icon: Code, title: "Coding", desc: "Web Dev, Mobile Apps & Software Engineering", color: "text-blue-500", bg: "bg-blue-50" },
+  { icon: Box, title: "3D Design", desc: "Blender, Modeling, Texturing & Animation", color: "text-purple-500", bg: "bg-purple-50" },
   { icon: Megaphone, title: "Marketing", desc: "Digital Marketing, SEO & Growth Strategy", color: "text-amber-500", bg: "bg-amber-50" },
   { icon: BarChart3, title: "Data Analytics", desc: "Python, SQL, Dashboards & Business Intelligence", color: "text-emerald-500", bg: "bg-emerald-50" },
 ];
