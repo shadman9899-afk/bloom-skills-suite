@@ -259,7 +259,7 @@ const Checkout = () => {
                 ) : (
                   <AnimatePresence>
                     <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="flex gap-2">
-                      <Input placeholder="e.g. SLATE20" value={coupon} onChange={(e) => setCoupon(e.target.value)} className="h-10" />
+                      <Input placeholder="Enter coupon code" value={coupon} onChange={(e) => setCoupon(e.target.value)} className="h-10" />
                       <Button onClick={applyCoupon} variant="outline" className="h-10">Apply</Button>
                     </motion.div>
                   </AnimatePresence>
