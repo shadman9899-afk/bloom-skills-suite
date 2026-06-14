@@ -58,12 +58,13 @@ const Checkout = () => {
   const savingsPct = Math.round((savings / mrp) * 100);
 
   const applyCoupon = () => {
-    if (coupon.trim().toUpperCase() === "SLATE20") {
-      setDiscount(Math.round(price * 0.2));
-      toast({ title: "Coupon applied 🎉", description: "20% off unlocked." });
-    } else {
-      toast({ title: "Invalid coupon", variant: "destructive" });
-    }
+    // Coupon validation must happen server-side to prevent client-side bypass.
+    // Will be wired to a secure edge function once the payment backend is connected.
+    toast({
+      title: "Coupons unavailable",
+      description: "Coupon validation will be available once secure checkout is enabled.",
+      variant: "destructive",
+    });
   };
 
   const validate = () => {
