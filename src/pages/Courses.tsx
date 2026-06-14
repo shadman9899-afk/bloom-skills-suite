@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useSearchParams } from "react-router-dom";
-import { Clock, Search, Palette, Code, Megaphone, BarChart3, Zap, Sparkles, GraduationCap } from "lucide-react";
+import { Clock, Search, Palette, Box, Megaphone, BarChart3, Zap, Sparkles, GraduationCap } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { coursesCatalog, type CatalogCourse, type CourseTag } from "@/data/coursesCatalog";
