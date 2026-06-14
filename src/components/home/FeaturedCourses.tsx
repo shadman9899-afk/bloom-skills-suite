@@ -5,19 +5,19 @@ import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import uiuxImg from "@/assets/courses/uiux-design.jpg";
-import fullstackImg from "@/assets/courses/fullstack-dev.jpg";
+import blenderImg from "@/assets/courses/blender-masterclass.jpg";
 import marketingImg from "@/assets/courses/digital-marketing.jpg";
 import dataImg from "@/assets/courses/data-analytics.jpg";
 import productImg from "@/assets/courses/product-design.jpg";
-import reactImg from "@/assets/courses/react-typescript.jpg";
+import product3dImg from "@/assets/courses/3d-product-visualization.jpg";
 
 const courses = [
   { id: "1", title: "UI/UX Design Fundamentals", duration: "8 weeks", level: "Beginner", category: "Design", image: uiuxImg },
-  { id: "2", title: "Full-Stack Web Development", duration: "12 weeks", level: "Intermediate", category: "Coding", image: fullstackImg },
+  { id: "2", title: "Blender Masterclass – Complete 3D Design", duration: "10 weeks", level: "Beginner", category: "3D Design", image: blenderImg },
   { id: "3", title: "Digital Marketing Mastery", duration: "6 weeks", level: "Beginner", category: "Marketing", image: marketingImg },
   { id: "4", title: "Data Analytics with Python", duration: "10 weeks", level: "Intermediate", category: "Data", image: dataImg },
   { id: "5", title: "Product Design Sprint", duration: "4 weeks", level: "Beginner", category: "Design", image: productImg },
-  { id: "6", title: "React & TypeScript Pro", duration: "8 weeks", level: "Intermediate", category: "Coding", image: reactImg },
+  { id: "6", title: "3D Product Visualization with Blender", duration: "6 weeks", level: "Beginner", category: "3D Design", image: product3dImg },
 ];
 
 const FeaturedCourses = () => {

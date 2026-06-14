@@ -61,7 +61,7 @@ const defaultCourseForm: CourseForm = {
   is_published: true,
 };
 
-const categoryOptions = ["Design", "Coding", "Marketing", "Data"];
+const categoryOptions = ["Design", "3D Design", "Marketing", "Data"];
 const levelOptions = ["Beginner", "Intermediate", "Advanced"];
 const durationOptions = ["4 weeks", "6 weeks", "8 weeks", "10 weeks", "12 weeks", "16 weeks"];
 

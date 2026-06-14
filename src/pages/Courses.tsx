@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useSearchParams } from "react-router-dom";
-import { Clock, Search, Palette, Code, Megaphone, BarChart3, Zap, Sparkles, GraduationCap } from "lucide-react";
+import { Clock, Search, Palette, Box, Megaphone, BarChart3, Zap, Sparkles, GraduationCap } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { coursesCatalog, type CatalogCourse, type CourseTag } from "@/data/coursesCatalog";
@@ -10,7 +10,7 @@ const levels = ["All", "Beginner", "Intermediate", "Advanced"];
 
 const categoryCards = [
   { title: "Design", icon: Palette, color: "from-pink-500 to-red-500", items: ["UI/UX", "Figma", "Motion", "Video", "Branding"] },
-  { title: "Coding", icon: Code, color: "from-blue-500 to-indigo-500", items: ["MERN Stack", "Frontend", "Node.js", "Python"] },
+  { title: "3D Design", icon: Box, color: "from-purple-500 to-indigo-500", items: ["Blender", "Modeling", "Texturing", "Animation"] },
   { title: "Marketing", icon: Megaphone, color: "from-orange-500 to-orange-600", items: ["Social Media", "Performance", "SEO", "Digital"] },
   { title: "Data", icon: BarChart3, color: "from-green-500 to-teal-500", items: ["Analytics", "Excel", "SQL"] },
 ];
@@ -153,7 +153,7 @@ const Courses = () => {
             Explore Slate Academy Courses
           </h1>
           <p className="mt-3 text-muted-foreground lg:text-lg">
-            Premium courses in Design, Coding, Marketing, and Data — built to make you job-ready.
+            Premium courses in Design, 3D Design, Marketing, and Data — built to make you job-ready.
           </p>
         </div>
       </section>

@@ -7,10 +7,10 @@ import photoshopImg from "@/assets/courses/photoshop-advanced.jpg";
 import illustratorImg from "@/assets/courses/illustrator-basics.jpg";
 import brandingImg from "@/assets/courses/branding-identity.jpg";
 import mobileUiImg from "@/assets/courses/mobile-app-ui.jpg";
-import mernImg from "@/assets/courses/mern-stack.jpg";
-import frontendImg from "@/assets/courses/frontend-dev.jpg";
-import nodeImg from "@/assets/courses/nodejs-backend.jpg";
-import pythonImg from "@/assets/courses/python-beginners.jpg";
+import blenderImg from "@/assets/courses/blender-masterclass.jpg";
+import product3dImg from "@/assets/courses/3d-product-visualization.jpg";
+import characterImg from "@/assets/courses/character-modeling.jpg";
+import animation3dImg from "@/assets/courses/3d-animation-motion.jpg";
 import digitalMktImg from "@/assets/courses/digital-marketing-complete.jpg";
 import socialImg from "@/assets/courses/social-media-marketing.jpg";
 import perfMktImg from "@/assets/courses/performance-marketing.jpg";
@@ -28,7 +28,7 @@ export interface CatalogCourse {
   tag: CourseTag;
   level: "Beginner" | "Intermediate" | "Advanced";
   duration: string;
-  category: "Design" | "Coding" | "Marketing" | "Data";
+  category: "Design" | "3D Design" | "Marketing" | "Data";
   image: string;
 }
 
@@ -42,10 +42,10 @@ export const coursesCatalog: CatalogCourse[] = [
   { id: "illustrator-beginners", title: "Illustrator for Beginners – Vector Design Basics", subtitle: "Build logos, icons, and illustrations confidently", tag: "Quick Skill", level: "Beginner", duration: "3 weeks", category: "Design", image: illustratorImg },
   { id: "branding-identity", title: "Branding & Visual Identity Design Course", subtitle: "Craft brand systems that win clients and customers", tag: "Advanced", level: "Intermediate", duration: "6 weeks", category: "Design", image: brandingImg },
   { id: "mobile-app-ui", title: "Mobile App UI Design – Real Projects", subtitle: "Ship App Store–ready iOS and Android designs", tag: "Advanced", level: "Intermediate", duration: "6 weeks", category: "Design", image: mobileUiImg },
-  { id: "mern-fullstack", title: "Full Stack Web Development Course – MERN Stack", subtitle: "MongoDB, Express, React, and Node.js end-to-end", tag: "Advanced", level: "Advanced", duration: "16 weeks", category: "Coding", image: mernImg },
-  { id: "frontend-dev", title: "Frontend Development – HTML, CSS, JavaScript Mastery", subtitle: "Build responsive, modern websites from zero", tag: "Beginner", level: "Beginner", duration: "10 weeks", category: "Coding", image: frontendImg },
-  { id: "nodejs-backend", title: "Backend Development with Node.js – Complete Guide", subtitle: "REST APIs, databases, and authentication flows", tag: "Advanced", level: "Intermediate", duration: "9 weeks", category: "Coding", image: nodeImg },
-  { id: "python-beginners", title: "Python for Beginners – Coding Essentials Course", subtitle: "Your first step into programming and automation", tag: "Beginner", level: "Beginner", duration: "8 weeks", category: "Coding", image: pythonImg },
+  { id: "blender-masterclass", title: "Blender Masterclass – Complete 3D Design", subtitle: "Learn modeling, texturing, lighting, and rendering", tag: "Beginner", level: "Beginner", duration: "10 weeks", category: "3D Design", image: blenderImg },
+  { id: "3d-product-visualization", title: "3D Product Visualization with Blender", subtitle: "Create realistic product renders for brands", tag: "Beginner", level: "Beginner", duration: "6 weeks", category: "3D Design", image: product3dImg },
+  { id: "character-modeling", title: "Character Modeling & Sculpting", subtitle: "Build game-ready and animation-ready characters", tag: "Advanced", level: "Intermediate", duration: "8 weeks", category: "3D Design", image: characterImg },
+  { id: "3d-animation-motion", title: "3D Animation & Motion Design", subtitle: "Create professional animations and visual effects", tag: "Advanced", level: "Advanced", duration: "8 weeks", category: "3D Design", image: animation3dImg },
   { id: "digital-marketing-complete", title: "Digital Marketing Mastery – Complete Course", subtitle: "Strategy, channels, funnels, and analytics in one course", tag: "Beginner", level: "Beginner", duration: "10 weeks", category: "Marketing", image: digitalMktImg },
   { id: "social-media-marketing", title: "Social Media Marketing – Instagram & Ads Course", subtitle: "Grow audiences and run conversion-driven campaigns", tag: "Beginner", level: "Beginner", duration: "5 weeks", category: "Marketing", image: socialImg },
   { id: "performance-marketing", title: "Performance Marketing – Paid Ads Strategy Mastery", subtitle: "Google, Meta, and YouTube ads that scale profitably", tag: "Advanced", level: "Advanced", duration: "8 weeks", category: "Marketing", image: perfMktImg },
