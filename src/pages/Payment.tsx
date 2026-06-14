@@ -30,12 +30,13 @@ const Payment = () => {
   const total = course.price - discount;
 
   const applyCoupon = () => {
-    if (coupon.toUpperCase() === "SLATE20") {
-      setDiscount(Math.round(course.price * 0.2));
-      toast({ title: "Coupon applied!", description: "20% discount has been applied." });
-    } else {
-      toast({ title: "Invalid coupon", description: "Please check your coupon code.", variant: "destructive" });
-    }
+    // Coupon validation must happen server-side to prevent client-side bypass.
+    // Will be wired to a secure edge function once the payment backend is connected.
+    toast({
+      title: "Coupons unavailable",
+      description: "Coupon validation will be available once secure checkout is enabled.",
+      variant: "destructive",
+    });
   };
 
   const handlePayment = () => {
