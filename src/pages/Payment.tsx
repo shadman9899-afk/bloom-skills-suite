@@ -149,7 +149,7 @@ const Payment = () => {
                   <div className="mt-2 flex gap-2">
                     <input
                       className="h-10 flex-1 rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                      placeholder="e.g. SLATE20"
+                      placeholder="Enter coupon code"
                       value={coupon}
                       onChange={(e) => setCoupon(e.target.value)}
                     />
