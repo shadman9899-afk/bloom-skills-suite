@@ -58,12 +58,13 @@ const Checkout = () => {
   const savingsPct = Math.round((savings / mrp) * 100);
 
   const applyCoupon = () => {
-    if (coupon.trim().toUpperCase() === "SLATE20") {
-      setDiscount(Math.round(price * 0.2));
-      toast({ title: "Coupon applied 🎉", description: "20% off unlocked." });
-    } else {
-      toast({ title: "Invalid coupon", variant: "destructive" });
-    }
+    // Coupon validation must happen server-side to prevent client-side bypass.
+    // Will be wired to a secure edge function once the payment backend is connected.
+    toast({
+      title: "Coupons unavailable",
+      description: "Coupon validation will be available once secure checkout is enabled.",
+      variant: "destructive",
+    });
   };
 
   const validate = () => {
@@ -258,7 +259,7 @@ const Checkout = () => {
                 ) : (
                   <AnimatePresence>
                     <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="flex gap-2">
-                      <Input placeholder="e.g. SLATE20" value={coupon} onChange={(e) => setCoupon(e.target.value)} className="h-10" />
+                      <Input placeholder="Enter coupon code" value={coupon} onChange={(e) => setCoupon(e.target.value)} className="h-10" />
                       <Button onClick={applyCoupon} variant="outline" className="h-10">Apply</Button>
                     </motion.div>
                   </AnimatePresence>
