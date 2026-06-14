@@ -4,7 +4,7 @@ import { GraduationCap } from "lucide-react";
 const footerLinks = {
   Courses: [
     { label: "Design", path: "/courses?category=design" },
-    { label: "Coding", path: "/courses?category=coding" },
+    { label: "3D Design", path: "/courses?category=3d-design" },
     { label: "Marketing", path: "/courses?category=marketing" },
     { label: "Data Analytics", path: "/courses?category=data" },
   ],
