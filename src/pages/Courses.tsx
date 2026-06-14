@@ -10,7 +10,7 @@ const levels = ["All", "Beginner", "Intermediate", "Advanced"];
 
 const categoryCards = [
   { title: "Design", icon: Palette, color: "from-pink-500 to-red-500", items: ["UI/UX", "Figma", "Motion", "Video", "Branding"] },
-  { title: "Coding", icon: Code, color: "from-blue-500 to-indigo-500", items: ["MERN Stack", "Frontend", "Node.js", "Python"] },
+  { title: "3D Design", icon: Box, color: "from-purple-500 to-indigo-500", items: ["Blender", "Modeling", "Texturing", "Animation"] },
   { title: "Marketing", icon: Megaphone, color: "from-orange-500 to-orange-600", items: ["Social Media", "Performance", "SEO", "Digital"] },
   { title: "Data", icon: BarChart3, color: "from-green-500 to-teal-500", items: ["Analytics", "Excel", "SQL"] },
 ];
