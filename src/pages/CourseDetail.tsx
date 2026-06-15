@@ -1,418 +1,603 @@
-import { useParams, Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Clock, BarChart2, CheckCircle, ChevronDown, BookOpen, Award, Users, Headphones, FileText, Video, Briefcase, Star, Zap, Download, MessageCircle, Play, IndianRupee } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+import { motion } from "framer-motion";
+import {
+  Clock, BarChart2, CheckCircle, Award, Users, FileText, Briefcase, Star,
+  Download, MessageCircle, Play, IndianRupee, Globe, Video, Trophy,
+  Sparkles, Target, Rocket, Heart, Instagram, Linkedin, ChevronDown,
+  GraduationCap, Calendar, Infinity as InfinityIcon, BookOpen, ShieldCheck,
+  TrendingUp, MonitorPlay, MessagesSquare, BadgeCheck,
+} from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import {
+  Accordion, AccordionContent, AccordionItem, AccordionTrigger,
+} from "@/components/ui/accordion";
+import { coursesCatalog, type CatalogCourse } from "@/data/coursesCatalog";
 
-interface CourseDetailRow {
-  id: string;
-  title: string;
-  description: string;
-  duration: string;
-  level: string;
-  category: string;
-  price: number;
-  image_url: string | null;
-  is_published: boolean;
-  instructor_name: string | null;
-}
+/* ---------------- Static content per page (rich, generic-friendly) ---------------- */
 
-// Mock course content data (in a real app, this would come from the database)
-const courseContent = {
-  "What You'll Learn": [
-    "Master fundamental concepts and principles",
-    "Apply knowledge through hands-on projects",
-    "Develop problem-solving skills",
-    "Build a strong portfolio of work",
-    "Learn industry best practices and standards",
-    "Prepare for professional certifications"
-  ],
-  "Course Content": [
-    { title: "Introduction to the Course", duration: "15 min", type: "video" },
-    { title: "Core Concepts & Fundamentals", duration: "45 min", type: "video" },
-    { title: "Practical Applications", duration: "60 min", type: "video" },
-    { title: "Hands-on Project", duration: "90 min", type: "project" },
-    { title: "Assessment & Quiz", duration: "30 min", type: "quiz" },
-    { title: "Final Project & Certification", duration: "120 min", type: "project" }
-  ],
-  "Requirements": [
-    "Basic computer skills",
-    "Stable internet connection",
-    "Commitment to learning",
-    "No prior experience required for beginner courses",
-    "A modern web browser (Chrome, Firefox, Safari, or Edge)"
-  ]
+const outcomes = [
+  { icon: Rocket, title: "Build Real Projects", desc: "Ship 6–8 portfolio-grade projects from brief to delivery." },
+  { icon: Briefcase, title: "Professional Portfolio", desc: "Curated case studies tailored for top recruiters." },
+  { icon: Sparkles, title: "Industry Tools", desc: "Hands-on with the exact tools used by hiring teams." },
+  { icon: FileText, title: "Live Case Studies", desc: "Solve briefs from real brands and startups." },
+  { icon: Heart, title: "Career Mentorship", desc: "1:1 reviews, weekly office hours, and feedback loops." },
+  { icon: Trophy, title: "Become Job Ready", desc: "Mock interviews and a placement roadmap." },
+];
+
+const highlights = [
+  { icon: MonitorPlay, label: "Live Classes" },
+  { icon: InfinityIcon, label: "Lifetime Access" },
+  { icon: FileText, label: "Assignments" },
+  { icon: Target, label: "Placement Support" },
+  { icon: MessagesSquare, label: "Mock Interviews" },
+  { icon: Users, label: "Industry Mentorship" },
+  { icon: Globe, label: "Community Access" },
+  { icon: BadgeCheck, label: "Certificate" },
+];
+
+const skillsByCategory: Record<string, string[]> = {
+  "Design": ["UX Research", "Wireframing", "User Flows", "Figma", "Design Systems", "Prototyping", "Usability Testing", "Portfolio Design"],
+  "3D Design": ["Blender", "Modeling", "Texturing", "Lighting", "Rendering", "Animation", "Sculpting", "Composition"],
+  "Marketing": ["SEO", "Meta Ads", "Google Ads", "Funnels", "Analytics", "Copywriting", "Email Marketing", "Branding"],
+  "Data": ["Excel", "SQL", "Python", "Power BI", "Tableau", "Statistics", "Dashboards", "Storytelling"],
 };
+
+const curriculumByCategory: Record<string, { title: string; lessons: string[] }[]> = {
+  "Design": [
+    { title: "Design Foundations", lessons: ["Color & Typography", "Layout Principles", "Visual Hierarchy", "Gestalt Laws"] },
+    { title: "UX Research", lessons: ["User Interviews", "Personas", "Journey Maps", "Competitive Audits"] },
+    { title: "Wireframing", lessons: ["Low-fi Sketches", "Information Architecture", "User Flows", "Flow Reviews"] },
+    { title: "UI Design", lessons: ["Components", "Patterns", "Mobile First", "Accessibility"] },
+    { title: "Design Systems", lessons: ["Tokens", "Auto-layout", "Variants", "Documentation"] },
+    { title: "Prototyping", lessons: ["Micro-interactions", "Smart Animate", "Handoff", "Testing"] },
+    { title: "Portfolio", lessons: ["Case Study Writing", "Behance/Dribbble", "Personal Site", "Storytelling"] },
+    { title: "Placement Preparation", lessons: ["Resume", "LinkedIn", "Mock Interviews", "Salary Negotiation"] },
+  ],
+  "3D Design": [
+    { title: "Blender Foundations", lessons: ["Interface", "Navigation", "Primitives", "Shortcuts"] },
+    { title: "Modeling", lessons: ["Hard Surface", "Topology", "Booleans", "Modifiers"] },
+    { title: "Texturing & Materials", lessons: ["PBR", "UV Unwrap", "Substance", "Procedurals"] },
+    { title: "Lighting & Rendering", lessons: ["HDRI", "Cycles vs Eevee", "Compositing", "Optimization"] },
+    { title: "Animation", lessons: ["Keyframes", "Rigging", "Walk Cycles", "Camera Moves"] },
+    { title: "Sculpting", lessons: ["Dynamic Topology", "Brushes", "Detail Pass", "Retopology"] },
+    { title: "Portfolio Reels", lessons: ["Shot List", "Editing", "Color", "Showreel"] },
+    { title: "Placement Preparation", lessons: ["Resume", "ArtStation", "Studio Pitch", "Mock Interviews"] },
+  ],
+  "Marketing": [
+    { title: "Marketing Foundations", lessons: ["STP", "Funnels", "Channels", "Metrics"] },
+    { title: "SEO", lessons: ["Keyword Research", "On-page", "Technical", "Link Building"] },
+    { title: "Performance Ads", lessons: ["Meta Ads", "Google Ads", "Creative Testing", "Scaling"] },
+    { title: "Social Media", lessons: ["Instagram", "YouTube", "Content Calendars", "Community"] },
+    { title: "Analytics", lessons: ["GA4", "Attribution", "Dashboards", "Reporting"] },
+    { title: "Email & CRM", lessons: ["Lifecycle", "Automations", "Segmentation", "Deliverability"] },
+    { title: "Portfolio", lessons: ["Case Studies", "Audits", "Decks", "Personal Brand"] },
+    { title: "Placement Preparation", lessons: ["Resume", "LinkedIn", "Mock Interviews", "Negotiation"] },
+  ],
+  "Data": [
+    { title: "Data Foundations", lessons: ["Excel", "Statistics", "Spreadsheets", "Data Cleaning"] },
+    { title: "SQL", lessons: ["Joins", "Window Functions", "CTEs", "Performance"] },
+    { title: "Python for Data", lessons: ["Pandas", "NumPy", "Matplotlib", "Notebooks"] },
+    { title: "Visualization", lessons: ["Power BI", "Tableau", "Storytelling", "Dashboards"] },
+    { title: "Business Analytics", lessons: ["KPIs", "Cohorts", "Forecasting", "AB Tests"] },
+    { title: "Case Studies", lessons: ["E-commerce", "SaaS", "Fintech", "Marketing"] },
+    { title: "Portfolio", lessons: ["Kaggle", "GitHub", "Notion Case Studies", "Personal Site"] },
+    { title: "Placement Preparation", lessons: ["Resume", "LinkedIn", "Mock Interviews", "Negotiation"] },
+  ],
+};
+
+const journey = [
+  { label: "Enrollment", icon: GraduationCap },
+  { label: "Foundation", icon: BookOpen },
+  { label: "Projects", icon: Briefcase },
+  { label: "Portfolio", icon: Sparkles },
+  { label: "Mock Interviews", icon: MessagesSquare },
+  { label: "Placement Support", icon: Target },
+  { label: "Certification", icon: Award },
+];
+
+const projects = [
+  { name: "Food Delivery App", difficulty: "Intermediate", tools: "Figma, Protopie" },
+  { name: "Banking Dashboard", difficulty: "Advanced", tools: "Figma, Data Viz" },
+  { name: "Travel Booking Platform", difficulty: "Intermediate", tools: "Figma, Auto-layout" },
+  { name: "E-commerce App", difficulty: "Intermediate", tools: "Figma, Design Systems" },
+  { name: "Healthcare Dashboard", difficulty: "Advanced", tools: "Figma, Accessibility" },
+  { name: "Social Media Redesign", difficulty: "Beginner", tools: "Figma, Prototyping" },
+];
+
+const successStories = [
+  { name: "Aarav Singh", before: "BBA Graduate", after: "UI Designer", company: "Razorpay", initials: "AS" },
+  { name: "Ishita Mehta", before: "Self-taught Hobbyist", after: "Product Designer", company: "Swiggy", initials: "IM" },
+  { name: "Rohan Patel", before: "Mechanical Engineer", after: "UX Designer", company: "Flipkart", initials: "RP" },
+  { name: "Sneha Iyer", before: "Career Switcher", after: "Visual Designer", company: "Zomato", initials: "SI" },
+];
+
+const placementPerks = [
+  "Resume Building", "Portfolio Reviews", "LinkedIn Optimization",
+  "Mock Interviews", "Job Referrals", "Hiring Partner Access", "Career Roadmap",
+];
+
+const hiringPartners = ["Google", "Amazon", "Microsoft", "Adobe", "Flipkart", "Swiggy", "Razorpay", "TCS", "Infosys", "Accenture"];
+
+const faqs = [
+  { q: "Who is this course for?", a: "Students, working professionals, freelancers, and career-switchers who want a job-ready skill backed by mentorship and placement support." },
+  { q: "Do I need prior experience?", a: "No prior experience required. We start from the fundamentals and progressively move to advanced, industry-grade work." },
+  { q: "Will I get a certificate?", a: "Yes. You receive a Slate Academy verified certificate on successful completion of projects and assessments." },
+  { q: "Is placement guaranteed?", a: "We provide structured placement support: mock interviews, hiring partner access, and referrals. Outcomes depend on individual performance." },
+  { q: "How are classes conducted?", a: "Live, online classes with our mentors, complemented by recordings, assignments, and 1:1 reviews." },
+  { q: "Will recordings be available?", a: "Yes, every session is recorded and accessible inside your dashboard for lifetime revisits." },
+];
+
+const priceByLevel: Record<string, number> = { Beginner: 24999, Intermediate: 34999, Advanced: 44999 };
+
+/* ---------------- Component ---------------- */
 
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const [course, setCourse] = useState<CourseDetailRow | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [expandedSection, setExpandedSection] = useState<string>("learn");
-  const topRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const [scrolled, setScrolled] = useState(false);
+
+  const course: CatalogCourse | undefined = useMemo(
+    () => coursesCatalog.find((c) => c.id === id),
+    [id]
+  );
 
   useEffect(() => {
-    // Scroll to top when component mounts
     window.scrollTo({ top: 0, behavior: "instant" });
-    if (topRef.current) {
-      topRef.current.scrollIntoView({ behavior: "instant" });
-    }
-  }, []);
-
-  useEffect(() => {
-    const fetchCourseDetail = async () => {
-      if (!id) return;
-
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("courses")
-        .select("id, title, description, category, duration, level, price, image_url, is_published, instructor_name")
-        .eq("id", id)
-        .eq("is_published", true)
-        .single();
-
-      if (error) {
-        console.error("Failed to fetch course detail", error);
-        setCourse(null);
-      } else {
-        setCourse(data as CourseDetailRow);
-      }
-      setLoading(false);
-    };
-
-    void fetchCourseDetail();
   }, [id]);
 
-  const toggleSection = (section: string) => {
-    setExpandedSection(expandedSection === section ? null : section);
-  };
-
-  // Convert price from USD to INR (assuming 1 USD = 85 INR, adjust as needed)
-  const priceInINR = course ? Math.round(course.price * 85) : 0;
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-        <Navbar />
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-              <div className="h-64 bg-gradient-to-r from-slate-200 to-slate-300 animate-pulse"></div>
-              <div className="p-6 md:p-8">
-                <div className="h-8 bg-slate-200 rounded-lg animate-pulse mb-4 w-3/4"></div>
-                <div className="h-4 bg-slate-200 rounded animate-pulse mb-2"></div>
-                <div className="h-4 bg-slate-200 rounded animate-pulse mb-2 w-5/6"></div>
-                <div className="h-4 bg-slate-200 rounded animate-pulse w-4/6"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 500);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   if (!course) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         <Navbar />
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4">Course Not Found</h1>
-              <p className="text-slate-600 mb-8">The course you're looking for doesn't exist or is not available.</p>
-              <Link to="/courses">
-                <Button className="bg-blue-600 hover:bg-blue-700">Back to Courses</Button>
-              </Link>
-            </div>
-          </div>
+        <div className="container mx-auto px-4 py-20 text-center">
+          <h1 className="text-3xl font-bold mb-4">Course Not Found</h1>
+          <p className="text-slate-600 mb-8">The course you're looking for doesn't exist.</p>
+          <Link to="/courses"><Button>Back to Courses</Button></Link>
         </div>
         <Footer />
       </div>
     );
   }
 
+  const price = priceByLevel[course.level] ?? 29999;
+  const original = Math.round(price * 1.5);
+  const discount = Math.round(((original - price) / original) * 100);
+  const skills = skillsByCategory[course.category] ?? [];
+  const curriculum = curriculumByCategory[course.category] ?? curriculumByCategory["Design"];
+  const related = coursesCatalog.filter((c) => c.id !== course.id).slice(0, 4);
+
+  const enrollHref = `/checkout/${course.id}`;
+  const goEnroll = () => navigate(enrollHref);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100" ref={topRef}>
+    <div className="min-h-screen bg-white">
       <Navbar />
 
-      {/* Breadcrumb Navigation */}
-      <div className="container mx-auto px-4 pt-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-2 text-sm text-slate-500 mb-4">
-            <Link to="/" className="hover:text-blue-600 transition-colors">Home</Link>
-            <span>/</span>
-            <Link to="/courses" className="hover:text-blue-600 transition-colors">Courses</Link>
-            <span>/</span>
-            <span className="text-slate-700 font-medium truncate">{course.title}</span>
+      {/* ============== HERO ============== */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#0B1020] via-[#1E2BE6]/90 to-[#3A1C71] text-white">
+        <div className="absolute inset-0 opacity-30 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle at 20% 20%, #F58220 0, transparent 40%), radial-gradient(circle at 80% 30%, #1E2BE6 0, transparent 45%)" }} />
+        <div className="container mx-auto px-4 py-12 lg:py-20 relative">
+          <div className="flex items-center gap-2 text-xs text-white/70 mb-6">
+            <Link to="/" className="hover:text-white">Home</Link><span>/</span>
+            <Link to="/courses" className="hover:text-white">Courses</Link><span>/</span>
+            <span className="text-white truncate">{course.title}</span>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+            {/* Left */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+              <Badge className="bg-[#F58220] hover:bg-[#F58220] text-white mb-5 px-3 py-1">{course.category}</Badge>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-5">
+                {course.title}
+              </h1>
+              <p className="text-lg text-white/80 mb-8 max-w-xl">{course.subtitle}</p>
+
+              <div className="flex flex-wrap gap-x-6 gap-y-3 mb-8 text-sm">
+                <span className="flex items-center gap-1.5"><Star className="h-4 w-4 fill-[#F58220] text-[#F58220]" /> 4.9 Rating</span>
+                <span className="flex items-center gap-1.5"><Users className="h-4 w-4" /> 1,200+ Students</span>
+                <span className="flex items-center gap-1.5"><Briefcase className="h-4 w-4" /> 50+ Hiring Partners</span>
+                <span className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4" /> Placement Support</span>
+                <span className="flex items-center gap-1.5"><Award className="h-4 w-4" /> Certificate</span>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button size="lg" onClick={goEnroll} className="bg-[#F58220] hover:bg-[#d96f15] text-white h-14 px-8 text-base font-semibold shadow-lg shadow-orange-500/30">
+                  <Play className="h-5 w-5 mr-2" /> Enroll Now
+                </Button>
+                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white hover:text-[#1E2BE6] h-14 px-8 text-base bg-white/5">
+                  <Download className="h-5 w-5 mr-2" /> Download Syllabus
+                </Button>
+              </div>
+            </motion.div>
+
+            {/* Right – preview card */}
+            <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, delay: 0.1 }}>
+              <Card className="overflow-hidden border-0 shadow-2xl bg-white text-slate-900 rounded-3xl">
+                <div className="relative aspect-video">
+                  <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                    <div className="h-16 w-16 rounded-full bg-white/95 flex items-center justify-center shadow-xl">
+                      <Play className="h-7 w-7 text-[#1E2BE6] ml-1" fill="currentColor" />
+                    </div>
+                  </div>
+                </div>
+                <div className="p-6 space-y-4">
+                  {[
+                    { icon: Clock, label: "Duration", val: course.duration },
+                    { icon: BarChart2, label: "Level", val: course.level },
+                    { icon: Globe, label: "Language", val: "English + Hindi" },
+                    { icon: Video, label: "Mode", val: "Online Live" },
+                    { icon: Award, label: "Certificate", val: "Yes, Verified" },
+                    { icon: Briefcase, label: "Job Assistance", val: "Included" },
+                  ].map((row) => (
+                    <div key={row.label} className="flex items-center justify-between text-sm">
+                      <span className="flex items-center gap-2 text-slate-600"><row.icon className="h-4 w-4 text-[#1E2BE6]" /> {row.label}</span>
+                      <span className="font-semibold">{row.val}</span>
+                    </div>
+                  ))}
+                  <div className="pt-3 border-t flex items-baseline gap-2">
+                    <IndianRupee className="h-5 w-5 text-[#1E2BE6]" />
+                    <span className="text-3xl font-bold text-[#1E2BE6]">{price.toLocaleString("en-IN")}</span>
+                    <span className="text-slate-400 line-through text-sm">₹{original.toLocaleString("en-IN")}</span>
+                    <Badge className="bg-green-100 text-green-700 hover:bg-green-100">{discount}% OFF</Badge>
+                  </div>
+                  <Button onClick={goEnroll} className="w-full h-12 bg-[#1E2BE6] hover:bg-[#1923b8]">Enroll Now</Button>
+                </div>
+              </Card>
+            </motion.div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="container mx-auto px-4 py-6 pb-12">
-        <div className="max-w-4xl mx-auto">
-          {/* Hero Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8"
-          >
-            <div className="relative h-48 md:h-64 lg:h-80 bg-gradient-to-r from-blue-600 to-purple-600">
-              {course.image_url && (
-                <img
-                  src={course.image_url}
-                  alt={course.title}
-                  className="w-full h-full object-cover"
-                  loading="eager"
-                />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent flex items-end md:items-center">
-                <div className="text-white p-6 md:p-8">
-                  <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm mb-3">
-                    {course.category}
-                  </span>
-                  <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2">{course.title}</h1>
-                  <p className="text-sm md:text-base text-white/90 max-w-2xl line-clamp-2">{course.description}</p>
+      {/* ============== OUTCOMES ============== */}
+      <Section title="What You'll Achieve" subtitle="Tangible outcomes by the end of the program">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {outcomes.map((o) => (
+            <Card key={o.title} className="p-6 border border-slate-100 hover:border-[#1E2BE6]/40 hover:shadow-xl transition-all rounded-2xl">
+              <div className="h-12 w-12 rounded-xl bg-[#1E2BE6]/10 text-[#1E2BE6] flex items-center justify-center mb-4">
+                <o.icon className="h-6 w-6" />
+              </div>
+              <h3 className="font-semibold text-lg mb-1">{o.title}</h3>
+              <p className="text-sm text-slate-600">{o.desc}</p>
+            </Card>
+          ))}
+        </div>
+      </Section>
+
+      {/* ============== HIGHLIGHTS ============== */}
+      <Section bg="muted" title="Course Highlights" subtitle="Everything packed into one career program">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {highlights.map((h) => (
+            <Card key={h.label} className="p-5 text-center border border-slate-100 rounded-2xl hover:-translate-y-1 transition-transform">
+              <div className="h-12 w-12 mx-auto rounded-xl bg-gradient-to-br from-[#1E2BE6] to-[#F58220] text-white flex items-center justify-center mb-3">
+                <h.icon className="h-6 w-6" />
+              </div>
+              <p className="font-medium text-sm">{h.label}</p>
+            </Card>
+          ))}
+        </div>
+      </Section>
+
+      {/* ============== SKILLS ============== */}
+      <Section title="Skills You'll Learn" subtitle="Industry-relevant skills, mapped to job descriptions">
+        <div className="flex flex-wrap gap-3">
+          {skills.map((s) => (
+            <span key={s} className="px-4 py-2 rounded-full bg-[#1E2BE6]/5 text-[#1E2BE6] font-medium text-sm border border-[#1E2BE6]/20 hover:bg-[#1E2BE6] hover:text-white transition-colors">
+              {s}
+            </span>
+          ))}
+        </div>
+      </Section>
+
+      {/* ============== CURRICULUM ============== */}
+      <Section bg="muted" title="Curriculum" subtitle={`${curriculum.length} modules • ${curriculum.reduce((a, m) => a + m.lessons.length, 0)} lessons • ${course.duration}`}>
+        <Accordion type="single" collapsible defaultValue="m-0" className="space-y-3">
+          {curriculum.map((m, i) => (
+            <AccordionItem key={m.title} value={`m-${i}`} className="bg-white rounded-2xl border border-slate-100 px-5 shadow-sm">
+              <AccordionTrigger className="hover:no-underline py-5">
+                <div className="flex items-center gap-4 text-left">
+                  <div className="h-10 w-10 rounded-xl bg-[#1E2BE6]/10 text-[#1E2BE6] font-bold flex items-center justify-center">{i + 1}</div>
+                  <div>
+                    <p className="font-semibold text-base">{m.title}</p>
+                    <p className="text-xs text-slate-500">{m.lessons.length} lessons • ~{2 + i} hrs</p>
+                  </div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <ul className="space-y-2 pl-14 pb-4">
+                  {m.lessons.map((l) => (
+                    <li key={l} className="flex items-center gap-2 text-sm text-slate-700">
+                      <CheckCircle className="h-4 w-4 text-green-600" /> {l}
+                    </li>
+                  ))}
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </Section>
+
+      {/* ============== JOURNEY TIMELINE ============== */}
+      <Section title="Your Learning Journey" subtitle="A clear path from day one to placement">
+        <div className="relative">
+          <div className="flex gap-4 overflow-x-auto pb-4 lg:grid lg:grid-cols-7 lg:gap-3 lg:overflow-visible">
+            {journey.map((step, i) => (
+              <div key={step.label} className="flex-shrink-0 w-44 lg:w-auto text-center">
+                <div className="relative">
+                  <div className="h-14 w-14 mx-auto rounded-2xl bg-gradient-to-br from-[#1E2BE6] to-[#F58220] text-white flex items-center justify-center shadow-lg">
+                    <step.icon className="h-6 w-6" />
+                  </div>
+                  {i < journey.length - 1 && (
+                    <div className="hidden lg:block absolute top-7 left-[calc(50%+28px)] w-[calc(100%-56px)] h-0.5 bg-gradient-to-r from-[#1E2BE6] to-[#F58220]" />
+                  )}
+                </div>
+                <p className="mt-3 text-sm font-medium">{step.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* ============== PROJECTS ============== */}
+      <Section bg="muted" title="Projects You'll Build" subtitle="Real briefs. Real deliverables. Real portfolio.">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {projects.map((p) => (
+            <Card key={p.name} className="overflow-hidden border border-slate-100 rounded-2xl group hover:shadow-xl transition-all">
+              <div className="aspect-video bg-gradient-to-br from-[#1E2BE6]/10 via-purple-100 to-[#F58220]/10 flex items-center justify-center text-[#1E2BE6]">
+                <Briefcase className="h-12 w-12 opacity-50 group-hover:scale-110 transition-transform" />
+              </div>
+              <div className="p-5">
+                <h3 className="font-semibold mb-2">{p.name}</h3>
+                <div className="flex items-center justify-between text-xs text-slate-500">
+                  <span className="px-2 py-1 rounded-full bg-slate-100">{p.difficulty}</span>
+                  <span>{p.tools}</span>
                 </div>
               </div>
+            </Card>
+          ))}
+        </div>
+      </Section>
+
+      {/* ============== MENTOR ============== */}
+      <Section title="Meet Your Mentor" subtitle="Learn directly from industry leaders">
+        <Card className="p-6 md:p-10 rounded-3xl border border-slate-100 shadow-lg">
+          <div className="grid md:grid-cols-[auto,1fr] gap-8 items-center">
+            <div className="h-32 w-32 md:h-40 md:w-40 rounded-3xl bg-gradient-to-br from-[#1E2BE6] to-[#F58220] text-white flex items-center justify-center text-5xl font-bold mx-auto">
+              SA
             </div>
-
-            <div className="p-5 md:p-8">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                <div className="flex flex-wrap items-center gap-4">
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <Clock className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-                    <span className="text-sm md:text-base">{course.duration}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <BarChart2 className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-                    <span className="text-sm md:text-base">{course.level}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <Users className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-                    <span className="text-sm md:text-base">Instructor: {course.instructor_name || "Expert Faculty"}</span>
-                  </div>
-                </div>
-                <div className="text-left sm:text-right">
-                  <div className="text-2xl md:text-3xl font-bold text-blue-600 flex items-center gap-1">
-                    <IndianRupee className="h-5 w-5 md:h-6 md:w-6" />
-                    {priceInINR.toLocaleString('en-IN')}
-                  </div>
-                  <div className="text-xs md:text-sm text-slate-500">Including GST</div>
-                </div>
-              </div>
-
-              <p className="text-slate-700 text-base md:text-lg leading-relaxed mb-6">{course.description}</p>
-
-              <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
-                <Button asChild className="flex-1 bg-blue-600 hover:bg-blue-700 text-sm md:text-base py-2 md:py-2.5">
-                  <Link to={`/checkout/${id}`}>
-                    <Play className="h-4 w-4 mr-2" />
-                    Enroll Now · ₹{priceInINR.toLocaleString('en-IN')}
-                  </Link>
-                </Button>
-                <Button variant="outline" className="flex-1 text-sm md:text-base py-2 md:py-2.5">
-                  <Download className="h-4 w-4 mr-2" />
-                  Download Syllabus
-                </Button>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Course Content Sections */}
-          <div className="space-y-4 md:space-y-6">
-            {/* What You'll Learn */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="bg-white rounded-2xl shadow-lg overflow-hidden"
-            >
-              <button
-                onClick={() => toggleSection("learn")}
-                className="w-full p-4 md:p-6 text-left flex items-center justify-between hover:bg-slate-50 transition-colors"
-              >
-                <div className="flex items-center gap-2 md:gap-3">
-                  <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-green-600 flex-shrink-0" />
-                  <h3 className="text-lg md:text-xl font-semibold text-slate-900">What You'll Learn</h3>
-                </div>
-                <ChevronDown className={`h-5 w-5 text-slate-400 transition-transform duration-300 flex-shrink-0 ${expandedSection === "learn" ? "rotate-180" : ""}`} />
-              </button>
-              <AnimatePresence>
-                {expandedSection === "learn" && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="border-t border-slate-100"
-                  >
-                    <div className="p-4 md:p-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                        {courseContent["What You'll Learn"].map((item, idx) => (
-                          <div key={idx} className="flex items-start gap-2 md:gap-3">
-                            <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-green-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm md:text-base text-slate-700">{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-
-            {/* Course Content */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white rounded-2xl shadow-lg overflow-hidden"
-            >
-              <button
-                onClick={() => toggleSection("content")}
-                className="w-full p-4 md:p-6 text-left flex items-center justify-between hover:bg-slate-50 transition-colors"
-              >
-                <div className="flex items-center gap-2 md:gap-3">
-                  <BookOpen className="h-5 w-5 md:h-6 md:w-6 text-blue-600 flex-shrink-0" />
-                  <h3 className="text-lg md:text-xl font-semibold text-slate-900">Course Content</h3>
-                </div>
-                <ChevronDown className={`h-5 w-5 text-slate-400 transition-transform duration-300 flex-shrink-0 ${expandedSection === "content" ? "rotate-180" : ""}`} />
-              </button>
-              <AnimatePresence>
-                {expandedSection === "content" && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="border-t border-slate-100"
-                  >
-                    <div className="p-4 md:p-6">
-                      <div className="space-y-3 md:space-y-4">
-                        {courseContent["Course Content"].map((item, idx) => (
-                          <div key={idx} className="flex items-center justify-between p-3 md:p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
-                            <div className="flex items-center gap-2 md:gap-3">
-                              {item.type === "video" && <Video className="h-4 w-4 md:h-5 md:w-5 text-blue-600 flex-shrink-0" />}
-                              {item.type === "project" && <Briefcase className="h-4 w-4 md:h-5 md:w-5 text-purple-600 flex-shrink-0" />}
-                              {item.type === "quiz" && <Star className="h-4 w-4 md:h-5 md:w-5 text-amber-600 flex-shrink-0" />}
-                              <span className="text-sm md:text-base font-medium text-slate-700">{item.title}</span>
-                            </div>
-                            <span className="text-xs md:text-sm text-slate-500">{item.duration}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-
-            {/* Requirements */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="bg-white rounded-2xl shadow-lg overflow-hidden"
-            >
-              <button
-                onClick={() => toggleSection("requirements")}
-                className="w-full p-4 md:p-6 text-left flex items-center justify-between hover:bg-slate-50 transition-colors"
-              >
-                <div className="flex items-center gap-2 md:gap-3">
-                  <Award className="h-5 w-5 md:h-6 md:w-6 text-purple-600 flex-shrink-0" />
-                  <h3 className="text-lg md:text-xl font-semibold text-slate-900">Requirements</h3>
-                </div>
-                <ChevronDown className={`h-5 w-5 text-slate-400 transition-transform duration-300 flex-shrink-0 ${expandedSection === "requirements" ? "rotate-180" : ""}`} />
-              </button>
-              <AnimatePresence>
-                {expandedSection === "requirements" && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="border-t border-slate-100"
-                  >
-                    <div className="p-4 md:p-6">
-                      <ul className="space-y-2 md:space-y-3">
-                        {courseContent["Requirements"].map((req, idx) => (
-                          <li key={idx} className="flex items-start gap-2 md:gap-3 text-sm md:text-base text-slate-700">
-                            <span className="text-blue-600 mt-0.5">•</span>
-                            {req}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-
-            {/* Instructor Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="bg-white rounded-2xl shadow-lg p-5 md:p-8"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4 md:gap-6 mb-4 md:mb-6">
-                <div className="w-14 h-14 md:w-20 md:h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Users className="h-7 w-7 md:h-10 md:w-10 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-lg md:text-xl font-semibold text-slate-900">{course.instructor_name || "Expert Instructor"}</h3>
-                  <p className="text-sm md:text-base text-slate-600">Professional Developer & Educator</p>
-                  <div className="flex items-center gap-1 mt-1">
-                    <Star className="h-3 w-3 md:h-4 md:w-4 text-amber-500 fill-amber-500" />
-                    <Star className="h-3 w-3 md:h-4 md:w-4 text-amber-500 fill-amber-500" />
-                    <Star className="h-3 w-3 md:h-4 md:w-4 text-amber-500 fill-amber-500" />
-                    <Star className="h-3 w-3 md:h-4 md:w-4 text-amber-500 fill-amber-500" />
-                    <Star className="h-3 w-3 md:h-4 md:w-4 text-amber-500 fill-amber-500" />
-                    <span className="text-xs md:text-sm text-slate-500 ml-1">(2,345 reviews)</span>
-                  </div>
-                </div>
-              </div>
-              <p className="text-slate-700 text-sm md:text-base leading-relaxed">
-                With over 10+ years of experience in the industry, our expert instructor brings real-world knowledge
-                and practical insights to help you succeed in your learning journey. They have trained over 50,000+
-                students globally and are passionate about making complex topics simple and accessible.
+            <div>
+              <h3 className="text-2xl font-bold mb-1">Sunny Arora</h3>
+              <p className="text-[#1E2BE6] font-medium mb-3">Senior Design Lead • 10+ years experience</p>
+              <p className="text-slate-600 mb-5">
+                A multidisciplinary practitioner who has led design and creative teams across consumer and B2B products. Passionate about mentoring the next generation of Indian creators.
               </p>
-            </motion.div>
-          </div>
-
-          {/* Call to Action */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="mt-8 md:mt-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 md:p-10 text-center text-white"
-          >
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-3 md:mb-4">Ready to Start Your Learning Journey?</h2>
-            <p className="text-base md:text-lg opacity-90 mb-6 md:mb-8 max-w-2xl mx-auto">
-              Join thousands of students who have transformed their careers with our courses.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
-              <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-slate-100 text-sm md:text-base">
-                <Link to={`/checkout/${id}`}>
-                  <Play className="h-4 w-4 md:h-5 md:w-5 mr-2" />
-                  Enroll Now - ₹{priceInINR.toLocaleString('en-IN')}
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="bg-white text-blue-600 hover:bg-slate-100 text-sm md:text-base">
-                <MessageCircle className="h-4 w-4 md:h-5 md:w-5 mr-2" />
-                Ask Questions
-              </Button>
+              <div className="flex flex-wrap gap-2 mb-5">
+                {["Google", "Adobe", "Razorpay", "Swiggy"].map((c) => (
+                  <Badge key={c} variant="secondary" className="bg-slate-100">{c}</Badge>
+                ))}
+              </div>
+              <div className="flex gap-3">
+                <Button asChild className="bg-gradient-to-r from-pink-500 via-rose-500 to-orange-500 hover:opacity-90">
+                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"><Instagram className="h-4 w-4 mr-2" /> Instagram</a>
+                </Button>
+                <Button asChild className="bg-[#0A66C2] hover:bg-[#084e96]">
+                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"><Linkedin className="h-4 w-4 mr-2" /> LinkedIn</a>
+                </Button>
+              </div>
             </div>
-          </motion.div>
+          </div>
+        </Card>
+      </Section>
+
+      {/* ============== SUCCESS STORIES ============== */}
+      <Section bg="muted" title="Student Success Stories" subtitle="Careers transformed at Slate Academy">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {successStories.map((s) => (
+            <Card key={s.name} className="p-6 rounded-2xl border border-slate-100 text-center hover:shadow-xl transition-all">
+              <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-[#1E2BE6] to-[#F58220] text-white font-bold text-xl flex items-center justify-center mb-3">
+                {s.initials}
+              </div>
+              <h4 className="font-semibold">{s.name}</h4>
+              <p className="text-xs text-slate-500 mt-1">{s.before} → <span className="text-[#1E2BE6] font-medium">{s.after}</span></p>
+              <p className="text-xs text-slate-700 mt-2 font-medium">@ {s.company}</p>
+            </Card>
+          ))}
         </div>
-      </div>
+      </Section>
+
+      {/* ============== PORTFOLIO SHOWCASE ============== */}
+      <Section title="Portfolio Showcase" subtitle="A glimpse of recent student work">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="aspect-square rounded-2xl bg-gradient-to-br from-[#1E2BE6]/10 via-purple-100 to-[#F58220]/10 hover:scale-[1.02] transition-transform cursor-pointer flex items-center justify-center text-[#1E2BE6]/50">
+              <Sparkles className="h-8 w-8" />
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* ============== PLACEMENT SUPPORT ============== */}
+      <Section bg="dark" title="Placement Support" subtitle="A complete career partnership, not just a course">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {placementPerks.map((p) => (
+            <div key={p} className="p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm text-white">
+              <CheckCircle className="h-6 w-6 text-[#F58220] mb-2" />
+              <p className="font-medium">{p}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* ============== HIRING PARTNERS ============== */}
+      <Section title="Hiring Partners" subtitle="Our students work at the companies you love">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {hiringPartners.map((p) => (
+            <div key={p} className="h-20 rounded-2xl border border-slate-100 flex items-center justify-center font-bold text-slate-700 hover:border-[#1E2BE6] hover:text-[#1E2BE6] transition-colors">
+              {p}
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* ============== CERTIFICATE ============== */}
+      <Section bg="muted" title="Earn Your Certificate" subtitle="A verified credential to share with recruiters">
+        <div className="grid md:grid-cols-2 gap-8 items-center">
+          <Card className="aspect-[4/3] rounded-3xl border-4 border-double border-[#1E2BE6]/30 bg-gradient-to-br from-white to-slate-50 p-8 flex flex-col items-center justify-center text-center shadow-2xl">
+            <Award className="h-16 w-16 text-[#F58220] mb-4" />
+            <p className="text-xs uppercase tracking-widest text-slate-500">Certificate of Completion</p>
+            <h3 className="text-2xl font-bold mt-3 mb-1">{course.title}</h3>
+            <p className="text-sm text-slate-600 mt-4">Awarded to <span className="font-semibold">[Student Name]</span></p>
+            <p className="mt-6 text-xs text-slate-500">Slate Academy • Verified Credential</p>
+          </Card>
+          <div className="space-y-4">
+            <h3 className="text-2xl font-bold">Industry-Recognized Certification</h3>
+            <p className="text-slate-600">Complete the assessments and final project to unlock your verifiable certificate. Share on LinkedIn, in your resume, and with recruiters.</p>
+            <ul className="space-y-2">
+              {["Unique verification ID", "Shareable on LinkedIn", "Recognized by hiring partners", "Lifetime validity"].map((l) => (
+                <li key={l} className="flex items-center gap-2 text-slate-700"><CheckCircle className="h-5 w-5 text-green-600" /> {l}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </Section>
+
+      {/* ============== PRICING ============== */}
+      <Section title="Investment in Your Future" subtitle="Flexible plans, transparent pricing" id="pricing">
+        <Card className="max-w-2xl mx-auto rounded-3xl border-2 border-[#1E2BE6] shadow-2xl overflow-hidden">
+          <div className="bg-gradient-to-r from-[#1E2BE6] to-[#F58220] text-white text-center py-3 text-sm font-semibold">
+            🔥 Limited Time Offer • Save {discount}%
+          </div>
+          <div className="p-8 md:p-10">
+            <div className="text-center mb-6">
+              <div className="flex items-baseline justify-center gap-2">
+                <span className="text-slate-400 line-through text-xl">₹{original.toLocaleString("en-IN")}</span>
+                <span className="text-5xl font-bold text-[#1E2BE6] flex items-center"><IndianRupee className="h-8 w-8" />{price.toLocaleString("en-IN")}</span>
+              </div>
+              <p className="text-sm text-slate-500 mt-2">or 3 EMIs of ₹{Math.round(price / 3).toLocaleString("en-IN")} • Registration fee ₹999</p>
+            </div>
+            <ul className="space-y-3 mb-8">
+              {["Full course access (lifetime)", "Live mentorship sessions", "All projects & assignments", "Verified certificate", "Placement support", "Community access"].map((l) => (
+                <li key={l} className="flex items-center gap-3 text-slate-700"><CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" /> {l}</li>
+              ))}
+            </ul>
+            <Button onClick={goEnroll} size="lg" className="w-full h-14 bg-[#F58220] hover:bg-[#d96f15] text-base font-semibold">
+              Enroll Now <Play className="h-4 w-4 ml-2" />
+            </Button>
+            <Button variant="ghost" className="w-full mt-2 text-[#1E2BE6]">
+              <MessageCircle className="h-4 w-4 mr-2" /> Talk to Counsellor
+            </Button>
+          </div>
+        </Card>
+      </Section>
+
+      {/* ============== FAQ ============== */}
+      <Section bg="muted" title="Frequently Asked Questions" subtitle="Everything you need to know">
+        <div className="max-w-3xl mx-auto">
+          <Accordion type="single" collapsible className="space-y-3">
+            {faqs.map((f, i) => (
+              <AccordionItem key={f.q} value={`faq-${i}`} className="bg-white rounded-2xl border border-slate-100 px-5">
+                <AccordionTrigger className="text-left hover:no-underline py-5 font-semibold">{f.q}</AccordionTrigger>
+                <AccordionContent className="text-slate-600 pb-5">{f.a}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </Section>
+
+      {/* ============== RELATED ============== */}
+      <Section title="Related Courses" subtitle="Continue your learning journey">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {related.map((r) => (
+            <Link key={r.id} to={`/courses/${r.id}`} className="group">
+              <Card className="overflow-hidden rounded-2xl border border-slate-100 hover:shadow-xl transition-all h-full">
+                <div className="aspect-video overflow-hidden">
+                  <img src={r.image} alt={r.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                </div>
+                <div className="p-4">
+                  <Badge variant="secondary" className="mb-2 text-xs">{r.category}</Badge>
+                  <h3 className="font-semibold text-sm line-clamp-2 group-hover:text-[#1E2BE6] transition-colors">{r.title}</h3>
+                  <p className="text-xs text-slate-500 mt-2">{r.duration} • {r.level}</p>
+                </div>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </Section>
+
+      {/* ============== FINAL CTA ============== */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#0B1020] via-[#1E2BE6] to-[#3A1C71] text-white py-20">
+        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(circle at 30% 50%, #F58220 0, transparent 40%)" }} />
+        <div className="container mx-auto px-4 text-center relative">
+          <TrendingUp className="h-12 w-12 mx-auto text-[#F58220] mb-5" />
+          <h2 className="text-3xl md:text-5xl font-bold mb-4">Ready to Start Your Career Journey?</h2>
+          <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
+            Join thousands of students building successful careers through Slate Academy.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button onClick={goEnroll} size="lg" className="bg-[#F58220] hover:bg-[#d96f15] h-14 px-8 text-base font-semibold">
+              Enroll Now <Play className="h-4 w-4 ml-2" />
+            </Button>
+            <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white hover:text-[#1E2BE6] h-14 px-8 text-base bg-white/5">
+              <MessageCircle className="h-4 w-4 mr-2" /> Talk to Counsellor
+            </Button>
+          </div>
+        </div>
+      </section>
+
       <Footer />
+
+      {/* ============== STICKY MOBILE / DESKTOP ENROLL BAR ============== */}
+      {scrolled && (
+        <motion.div
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-slate-200 shadow-2xl"
+        >
+          <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold truncate">{course.title}</p>
+              <p className="text-xs text-slate-500">
+                <span className="text-[#1E2BE6] font-bold">₹{price.toLocaleString("en-IN")}</span>
+                <span className="line-through ml-1">₹{original.toLocaleString("en-IN")}</span>
+              </p>
+            </div>
+            <Button onClick={goEnroll} className="bg-[#F58220] hover:bg-[#d96f15] h-11 px-6 flex-shrink-0">
+              Enroll Now
+            </Button>
+          </div>
+        </motion.div>
+      )}
     </div>
+  );
+};
+
+/* ---------------- Section helper ---------------- */
+const Section = ({
+  title, subtitle, children, bg = "white", id,
+}: { title: string; subtitle?: string; children: React.ReactNode; bg?: "white" | "muted" | "dark"; id?: string }) => {
+  const bgClass =
+    bg === "muted" ? "bg-slate-50" : bg === "dark" ? "bg-gradient-to-br from-[#0B1020] to-[#1E2BE6] text-white" : "bg-white";
+  return (
+    <section id={id} className={`${bgClass} py-16 md:py-24`}>
+      <div className="container mx-auto px-4">
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">{title}</h2>
+          {subtitle && <p className={bg === "dark" ? "text-white/70" : "text-slate-600"}>{subtitle}</p>}
+        </div>
+        {children}
+      </div>
+    </section>
   );
 };
 
