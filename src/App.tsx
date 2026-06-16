@@ -18,6 +18,7 @@ import Privacy from "./pages/Privacy.tsx";
 import Mentors from "./pages/Mentors.tsx";
 import Placements from "./pages/Placements.tsx";
 import KnowledgeHub from "./pages/KnowledgeHub.tsx";
+import DigitalMarketing from "./pages/DigitalMarketing.tsx";
 
 // Lazy load everything else
 const CourseDetail = lazy(() => import("./pages/CourseDetail.tsx"));
@@ -60,6 +61,7 @@ const App = () => (
             <Route path="/mentors" element={<Mentors />} />
             <Route path="/placements" element={<Placements />} />
             <Route path="/knowledge-hub" element={<KnowledgeHub />} />
+            <Route path="/digital-marketing" element={<DigitalMarketing />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
