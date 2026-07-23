@@ -60,6 +60,7 @@ const App = () => (
             <Route path="/ai-chat" element={<AIChatbot />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/mentors" element={<Mentors />} />
+            <Route path="/mentors/:slug" element={<MentorProfile />} />
             <Route path="/placements" element={<Placements />} />
             <Route path="/knowledge-hub" element={<KnowledgeHub />} />
             <Route path="/digital-marketing" element={<DigitalMarketing />} />
