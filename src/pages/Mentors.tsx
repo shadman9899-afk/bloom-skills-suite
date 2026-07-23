@@ -70,6 +70,7 @@ const mentors = [
     rating: 5.0,
     students: 1200,
     initials: "SS",
+    profileSlug: "sunny-singh",
     instagramUrl: "https://instagram.com/sunnysir3d",
     linkedinUrl: "https://linkedin.com/in/sunnysir",
   },
