@@ -16,6 +16,7 @@ import Support from "./pages/Support.tsx";
 import AIChatbot from "./pages/AIChatbot.tsx";
 import Privacy from "./pages/Privacy.tsx";
 import Mentors from "./pages/Mentors.tsx";
+import MentorProfile from "./pages/MentorProfile.tsx";
 import Placements from "./pages/Placements.tsx";
 import KnowledgeHub from "./pages/KnowledgeHub.tsx";
 import DigitalMarketing from "./pages/DigitalMarketing.tsx";
