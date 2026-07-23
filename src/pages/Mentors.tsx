@@ -1,9 +1,10 @@
+import { Link } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Linkedin, Instagram, Star } from "lucide-react";
+import { Linkedin, Instagram, Star, ArrowRight } from "lucide-react";
 
 const mentors = [
   {
@@ -69,6 +70,7 @@ const mentors = [
     rating: 5.0,
     students: 1200,
     initials: "SS",
+    profileSlug: "sunny-singh",
     instagramUrl: "https://instagram.com/sunnysir3d",
     linkedinUrl: "https://linkedin.com/in/sunnysir",
   },
@@ -130,6 +132,13 @@ const Mentors = () => (
                   </a>
                 </Button>
               </div>
+              {m.profileSlug && (
+                <Button asChild variant="ghost" size="sm" className="mt-3 w-full text-primary hover:text-primary">
+                  <Link to={`/mentors/${m.profileSlug}`}>
+                    View Full Profile <ArrowRight className="ml-1.5 h-4 w-4" />
+                  </Link>
+                </Button>
+              )}
             </CardContent>
           </Card>
         ))}

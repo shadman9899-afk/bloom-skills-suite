@@ -16,6 +16,7 @@ import Support from "./pages/Support.tsx";
 import AIChatbot from "./pages/AIChatbot.tsx";
 import Privacy from "./pages/Privacy.tsx";
 import Mentors from "./pages/Mentors.tsx";
+import MentorProfile from "./pages/MentorProfile.tsx";
 import Placements from "./pages/Placements.tsx";
 import KnowledgeHub from "./pages/KnowledgeHub.tsx";
 import DigitalMarketing from "./pages/DigitalMarketing.tsx";
@@ -59,6 +60,7 @@ const App = () => (
             <Route path="/ai-chat" element={<AIChatbot />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/mentors" element={<Mentors />} />
+            <Route path="/mentors/:slug" element={<MentorProfile />} />
             <Route path="/placements" element={<Placements />} />
             <Route path="/knowledge-hub" element={<KnowledgeHub />} />
             <Route path="/digital-marketing" element={<DigitalMarketing />} />
