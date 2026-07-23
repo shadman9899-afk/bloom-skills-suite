@@ -132,6 +132,13 @@ const Mentors = () => (
                   </a>
                 </Button>
               </div>
+              {m.profileSlug && (
+                <Button asChild variant="ghost" size="sm" className="mt-3 w-full text-primary hover:text-primary">
+                  <Link to={`/mentors/${m.profileSlug}`}>
+                    View Full Profile <ArrowRight className="ml-1.5 h-4 w-4" />
+                  </Link>
+                </Button>
+              )}
             </CardContent>
           </Card>
         ))}
